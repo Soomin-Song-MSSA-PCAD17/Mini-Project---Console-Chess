@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Mini_Project___Console_Chess
@@ -12,10 +13,10 @@ namespace Mini_Project___Console_Chess
         ChessboardBackend Backend { get; set; }
 
         #region constants
-        public const int SquareWidth = 3;
+        public const int SquareWidth = 4;
         public const int SquareHeight = 1;
         public const int VMargin = 3;
-        public const int HMargin = 32;
+        public const int HMargin = 12;
         public const ConsoleColor BACKGROUND = ConsoleColor.Black;
         public const ConsoleColor DARKSQUAREBG = ConsoleColor.DarkGray;
         public const ConsoleColor LIGHTSQUAREBG = ConsoleColor.Yellow;
@@ -33,6 +34,7 @@ namespace Mini_Project___Console_Chess
         }
         public void Initialize()
         {
+            Console.OutputEncoding = Encoding.UTF8;
             Console.BackgroundColor = BACKGROUND;
             Console.ForegroundColor = TEXTCOLOR;
             
@@ -43,6 +45,9 @@ namespace Mini_Project___Console_Chess
             Console.Clear();
 
             Console.ForegroundColor = LABELCOLOR;
+
+            // print squares from white's perspective
+
             // print file labels
             for (int f = 0; f < 8; f++)
             {
@@ -60,7 +65,6 @@ namespace Mini_Project___Console_Chess
                 Console.Write(Coordinate.NumToRank(r));
             }
 
-            // print squares
             Console.ForegroundColor = TEXTCOLOR;
             for (int rank = 0; rank < 8; rank++)
             {
@@ -72,9 +76,8 @@ namespace Mini_Project___Console_Chess
         }
         public void PrintSquare(Square square)
         {
-            //TODO: check if there's pieces on it
             string text;
-            if (square.Occupant == null) { text = $" {square.Position.ToAlgebraicNotation()}"; }
+            if (square.Occupant == null) { text = $" {square.Position.ToAlgebraicNotation()} "; }
             else
             {
                 text = " X ";
@@ -90,22 +93,22 @@ namespace Mini_Project___Console_Chess
                 switch(square.Occupant.Type)
                 {
                     case PieceType.King:
-                        text = " K ";
+                        text = " ♔  ";
                         break;
                     case PieceType.Queen:
-                        text = " Q ";
+                        text = " ♛  ";
                         break;
                     case PieceType.Bishop:
-                        text = " B ";
+                        text = " ♝  ";
                         break;
                     case PieceType.Knight:
-                        text = " N ";
+                        text = " ♞  ";
                         break;
                     case PieceType.Rook:
-                        text = " R ";
+                        text = " ♜  ";
                         break;
                     case PieceType.Pawn:
-                        text = " p ";
+                        text = " ♙  ";
                         break;
                 }
             }
@@ -131,5 +134,64 @@ namespace Mini_Project___Console_Chess
             Console.BackgroundColor = BACKGROUND;
 
         }
+
+
+        /// <summary>
+        /// TODO: WIP, parse and handle commands here
+        /// </summary>
+        /// <returns>false: end the game.</returns>
+        public bool CommandHandler()
+        {
+            PrintBoard(); // this might cause some weird display issues later, but for now, it lets you scale console size and fix it up
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
+            Console.Write($"{Backend.ActivePlayerString}'s turn.");
+            Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 3);
+            Console.Write("Input command: ");
+
+            string[] command = [];
+            command = Console.ReadLine().Split(' ');
+            if (command[0] == "quit")
+            {
+            Console.WriteLine(command[0]);
+                return false;
+            }
+
+            string regexCoordinate = @"[a-h][1-8]";
+            Regex re = new Regex(regexCoordinate, RegexOptions.IgnoreCase);
+            if (re.IsMatch(command[0]) && re.IsMatch(command[1]))
+            {
+                //check if input matches regex for validity of coordinate
+                Console.WriteLine("Attempting to move piece.");
+                Piece pieceToMove;
+                if (Backend.TryGetOccupant(new Coordinate(command[0]), out pieceToMove))
+                {
+                    if (pieceToMove == null)
+                    {
+                        Console.WriteLine($"No piece found at position {command[0]}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Found piece {pieceToMove.Type} at {command[0]}, checking if it can move to {command[1]}.");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"{command[0]} or {command[1]} is not a valid coordinate.");
+            }
+            Console.ReadKey();
+            return true;
+        }
+        public void Run()
+        {
+            Console.Clear();
+            bool continueGame = true;
+            while (continueGame)
+            {
+                continueGame = CommandHandler();
+            }
+        }
+
     }
 }

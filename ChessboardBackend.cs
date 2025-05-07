@@ -6,31 +6,35 @@ using System.Threading.Tasks;
 
 namespace Mini_Project___Console_Chess
 {
+    public enum Player { White='W', Black='B' }
     public class ChessboardBackend
     {
         public Square[,] Board;
         public List<Piece> Pieces;
+        public Player ActivePlayer;
+        public string ActivePlayerString { get=>ActivePlayer==Player.White?"White":"Black"; }
         public ChessboardBackend()
         {
             InitializeBoard();
             InitializePieces();
-
+            ActivePlayer = Player.White;
         }
         private void InitializeBoard()
         {
-            Board = new Square[8, 8];
+            var board = new Square[8, 8];
             for (int r = 0; r < 8; r++)
             {
                 for (int f = 0; f < 8; f++)
                 {
-                    Board[r, f] = new Square(r, f);
+                    board[r, f] = new Square(r, f);
                 }
             }
+            Board = board;
         }
         private void InitializePieces()
         {
             // generate all 32 pieces
-            Pieces =
+            List<Piece> pieces =
             [
                 new(PieceColor.White,PieceType.Rook,new Coordinate("a1")),
                 new(PieceColor.White,PieceType.Knight,new Coordinate("b1")),
@@ -67,10 +71,37 @@ namespace Mini_Project___Console_Chess
                 new(PieceColor.Black,PieceType.Rook,new Coordinate("h8")),
             ];
             // place all pieces in proper positions
+            Pieces = pieces;
+            UpdateBoard();
+        }
+        /// <summary>
+        /// Update Board[,].Occupant based on Pieces[].Position
+        /// </summary>
+        private void UpdateBoard()
+        {
             foreach(Piece piece in Pieces)
             {
-                Board[piece.Position.Rank, piece.Position.File].Occupant=piece;
+                Board[piece.Position.Rank, piece.Position.File].Occupant = piece;
             }
+        }
+        public bool TryGetOccupant(Coordinate coordinate, out Piece? piece)
+        {
+            if(Board[coordinate.Rank, coordinate.File].Occupant==null)
+            {
+                piece = null;
+                return false;
+            }
+            else
+            {
+                piece = Board[coordinate.Rank, coordinate.File].Occupant;
+                return true;
+            }
+        }
+        
+        public void ExecuteMove(Move move)
+        {
+            // TODO: execute the piece movement
+            UpdateBoard();
         }
     }
 }

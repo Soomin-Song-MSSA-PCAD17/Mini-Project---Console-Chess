@@ -16,7 +16,13 @@ namespace Mini_Project___Console_Chess
         {
             {0,'1'},{1,'2'},{2,'3'},{3,'4'},{4,'5'},{5,'6'},{6,'7'},{7,'8'}
         };
+        /// <summary>
+        /// horizontal lines, y value, represented by numbers
+        /// </summary>
         public int Rank { get; set; }
+        /// <summary>
+        /// vertical lines, x value, represented by alphabet
+        /// </summary>
         public int File { get; set; }
     
         public Coordinate(int rank, int file)
@@ -48,6 +54,11 @@ namespace Mini_Project___Console_Chess
         {
             var coord = new Coordinate(0, 0);
             return coord.Ranks[rankIndex];
+        }
+
+        public override string ToString()
+        {
+            return $"{Files[File]}{Ranks[Rank]}";
         }
     }
 }
