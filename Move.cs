@@ -11,13 +11,11 @@ namespace Mini_Project___Console_Chess
         public Piece Piece;
         public Coordinate StartPosition { get => Piece.Position; }
         public Coordinate EndPosition;
-        public bool IsCapture; // TODO: consider if this is really necessary?
         
-        public Move(Piece piece, Coordinate endPosition, bool isCapture)
+        public Move(Piece piece, Coordinate endPosition)
         {
             Piece = piece;
             EndPosition = endPosition;
-            IsCapture = isCapture;
         }
 
         /// changes the position of piece
@@ -29,9 +27,9 @@ namespace Mini_Project___Console_Chess
         }
 
         /// check if move is valid before calling Execute();
-        public static bool IsValidMove(Piece piece, Coordinate endPosition, bool isCapture, ChessboardBackend boardState)
+        public static bool IsValidMove(Piece piece, Coordinate endPosition, ChessboardBackend boardState)
         {
-            Move move = new Move(piece, endPosition, isCapture);
+            Move move = new Move(piece, endPosition);
             switch(piece.Type)
             {
                 case PieceType.Pawn:
@@ -69,8 +67,7 @@ namespace Mini_Project___Console_Chess
             {
                 case "single advance":
                     // single advance: non capture, forward space must be open
-                    if (move.IsCapture == false &&
-                        endSquare.Occupant == null)
+                    if (endSquare.Occupant == null)
                     { return true; }
                     break;
                 case "double advance":
@@ -78,16 +75,14 @@ namespace Mini_Project___Console_Chess
                     Coordinate pathCoord = new Coordinate(move.StartPosition.Rank + forward, move.StartPosition.File);
                     int startingRank = move.Piece.Color == PieceColor.White ? 1 : 6;
 
-                    if (move.IsCapture == false &&
-                        boardState.GetSquare(pathCoord).Occupant == null &&
+                    if (boardState.GetSquare(pathCoord).Occupant == null &&
                         move.StartPosition.Rank == startingRank &&
                         endSquare.Occupant == null)
                     { return true; }
                     break;
                 case "diagonal capture":
                     // diagonal capture: capture, diagonal space must have different color piece
-                    if(move.IsCapture&&
-                        endSquare.Occupant.Color != move.Piece.Color)
+                    if(endSquare.Occupant.Color != move.Piece.Color)
                     {
                         endSquare.Occupant.Kill();
                         return true;
