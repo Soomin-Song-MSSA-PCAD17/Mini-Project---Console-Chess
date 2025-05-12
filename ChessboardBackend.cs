@@ -15,11 +15,12 @@ namespace Mini_Project___Console_Chess
         public string ActivePlayerString { get=>ActivePlayer==Player.White?"White":"Black"; }
         public ChessboardBackend()
         {
-            InitializeBoard();
-            InitializePieces();
+            Board = InitializeBoard();
+            Pieces = InitializePieces();
             ActivePlayer = Player.White;
+            UpdateBoard();
         }
-        private void InitializeBoard()
+        private Square[,] InitializeBoard()
         {
             var board = new Square[8, 8];
             for (int r = 0; r < 8; r++)
@@ -29,9 +30,9 @@ namespace Mini_Project___Console_Chess
                     board[r, f] = new Square(r, f);
                 }
             }
-            Board = board;
+            return board;
         }
-        private void InitializePieces()
+        private List<Piece> InitializePieces()
         {
             // generate all 32 pieces
             List<Piece> pieces =
@@ -71,8 +72,7 @@ namespace Mini_Project___Console_Chess
                 new(PieceColor.Black,PieceType.Rook,new Coordinate("h8")),
             ];
             // place all pieces in proper positions
-            Pieces = pieces;
-            UpdateBoard();
+            return pieces;
         }
         /// <summary>
         /// Update Board[,].Occupant based on Pieces[].Position
@@ -88,11 +88,19 @@ namespace Mini_Project___Console_Chess
                 }
             }
             //update each square
-            foreach(Piece piece in Pieces)
+            foreach(Piece piece in this.Pieces)
             {
-                Board[piece.Position.Rank, piece.Position.File].Occupant = piece;
+                if (piece.IsCaptured) { }
+                else
+                {
+                    Board[piece.Position.Rank, piece.Position.File].Occupant = piece;
+                }
             }
             // Console.ReadKey();
+        }
+        public Square GetSquare(Coordinate coordinate)
+        {
+            return Board[coordinate.Rank, coordinate.File];
         }
         public bool TryGetOccupant(Coordinate coordinate, out Piece? piece)
         {
@@ -106,6 +114,16 @@ namespace Mini_Project___Console_Chess
                 piece = Board[coordinate.Rank, coordinate.File].Occupant;
                 return true;
             }
+        }
+        public bool TryMove(Move move)
+        {
+            if (!TryGetOccupant(move.StartPosition, out Piece occupant)) { return false; } // moving fails if there's no piece to move at start position
+            if(move.IsValidMove(this))
+            {
+                move.Execute();
+                return true;
+            }
+            return false;
         }
     }
 }

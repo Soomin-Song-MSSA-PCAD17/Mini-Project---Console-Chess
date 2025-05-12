@@ -14,11 +14,18 @@ namespace Mini_Project___Console_Chess
         public PieceColor Color { get; set; }
         public PieceType Type { get; set; }
         public Coordinate Position { get; set; }
+        public bool IsCaptured { get => !Position.IsValidSpace; }
         public Piece(PieceColor color, PieceType type, Coordinate position)
         {
             Color = color;
             Type = type;
             Position = position;
+        }
+
+        public void Kill()
+        {
+            Position.Rank = -1;
+            Position.File = -1;
         }
 
         // Instead of GetMoves() to see all valid moves, just check if a move is valid instead

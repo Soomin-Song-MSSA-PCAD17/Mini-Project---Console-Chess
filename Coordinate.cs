@@ -24,6 +24,7 @@ namespace Mini_Project___Console_Chess
         /// vertical lines, x value, represented by alphabet
         /// </summary>
         public int File { get; set; }
+        public bool IsValidSpace { get => Files.ContainsKey(File) && Ranks.ContainsKey(Rank); }
     
         public Coordinate(int rank, int file)
         {
@@ -41,7 +42,8 @@ namespace Mini_Project___Console_Chess
 
         public string ToAlgebraicNotation()
         {
-            return $"{Files[File]}{Ranks[Rank]}";
+            if(IsValidSpace) { return $"{Files[File]}{Ranks[Rank]}"; }
+            else { return "--"; }
         }
 
         public static char NumToFile(int fileIndex)

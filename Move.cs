@@ -11,7 +11,7 @@ namespace Mini_Project___Console_Chess
         public Piece Piece;
         public Coordinate StartPosition { get => Piece.Position; }
         public Coordinate EndPosition;
-        public bool IsCapture;
+        public bool IsCapture; // TODO: consider if this is really necessary?
         
         public Move(Piece piece, Coordinate endPosition, bool isCapture)
         {
@@ -26,7 +26,6 @@ namespace Mini_Project___Console_Chess
             Console.WriteLine($"{Piece.Position.ToAlgebraicNotation()} to {EndPosition.ToAlgebraicNotation()}");
             Piece.Position.File = EndPosition.File;
             Piece.Position.Rank = EndPosition.Rank;
-            Console.WriteLine($"New position: {Piece.Position.ToAlgebraicNotation()}");
         }
 
         /// check if move is valid before calling Execute();
@@ -41,6 +40,16 @@ namespace Mini_Project___Console_Chess
                     return false; // if it's an unknown piece type, return false
             }
         }
+        public bool IsValidMove(ChessboardBackend boardState)
+        {
+            switch (this.Piece.Type)
+            {
+                case PieceType.Pawn:
+                    return IsValidPawnMove(this, boardState);
+                default:
+                    return false; // if it's an unknown piece type, return false
+            }
+        }
 
         private static bool IsValidPawnMove(Move move, ChessboardBackend boardState)
         {
@@ -48,28 +57,41 @@ namespace Mini_Project___Console_Chess
 
             string moveType = "no pattern match";
             if (move.StartPosition.Rank + forward == move.EndPosition.Rank && move.StartPosition.File == move.EndPosition.File)
-            {
-                moveType = "single advance";
-            }
+            { moveType = "single advance"; }
             else if (move.StartPosition.Rank + 2 * forward == move.EndPosition.Rank && move.StartPosition.File == move.EndPosition.File)
-            {
-                moveType = "double advance";
-            }
+            { moveType = "double advance"; }
             else if(move.StartPosition.Rank+forward == move.EndPosition.Rank && Math.Abs(move.StartPosition.File-move.EndPosition.File)==1)
-            {
-                moveType = "diagonal capture";
-            }
+            { moveType = "diagonal capture"; }
+            Console.WriteLine($"{move.Piece.Type} at {move.StartPosition} is attempting to move: {moveType}");
 
+            Square endSquare = boardState.GetSquare(move.EndPosition);
             switch (moveType)
             {
                 case "single advance":
                     // single advance: non capture, forward space must be open
+                    if (move.IsCapture == false &&
+                        endSquare.Occupant == null)
+                    { return true; }
                     break;
                 case "double advance":
-                    // double advance: non capture, two spaces in front of it must be open
+                    // double advance: non capture, two spaces in front of it must be open, must be in starting rank
+                    Coordinate pathCoord = new Coordinate(move.StartPosition.Rank + forward, move.StartPosition.File);
+                    int startingRank = move.Piece.Color == PieceColor.White ? 1 : 6;
+
+                    if (move.IsCapture == false &&
+                        boardState.GetSquare(pathCoord).Occupant == null &&
+                        move.StartPosition.Rank == startingRank &&
+                        endSquare.Occupant == null)
+                    { return true; }
                     break;
                 case "diagonal capture":
                     // diagonal capture: capture, diagonal space must have different color piece
+                    if(move.IsCapture&&
+                        endSquare.Occupant.Color != move.Piece.Color)
+                    {
+                        endSquare.Occupant.Kill();
+                        return true;
+                    }
                     break;
             }
 

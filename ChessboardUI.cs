@@ -172,9 +172,10 @@ namespace Mini_Project___Console_Chess
                 Piece pieceToMove;
                 if (Backend.TryGetOccupant(new Coordinate(command[0]), out pieceToMove))
                 {
-                    bool moveIsCapture = false; // TODO: check if move is valid
-                    Move newMove = new Move(pieceToMove, new Coordinate(command[1]), moveIsCapture);
-                    newMove.Execute();
+                    Backend.TryMove(new Move(pieceToMove, new Coordinate(command[1]), false));
+                    //bool moveIsCapture = false; // TODO: check if move is valid
+                    //Move newMove = new Move(pieceToMove, new Coordinate(command[1]), moveIsCapture);
+                    //newMove.Execute();
                 }
                 else{
                     Console.WriteLine($"No piece found at {command[0]}.");
