@@ -52,6 +52,7 @@ namespace Mini_Project___Console_Chess
         private static bool IsValidPawnMove(Move move, ChessboardBackend boardState)
         {
             int forward = move.Piece.Color==PieceColor.White ? 1 : -1;
+            bool validity = false;
 
             string moveType = "no pattern match";
             if (move.StartPosition.Rank + forward == move.EndPosition.Rank && move.StartPosition.File == move.EndPosition.File)
@@ -62,13 +63,17 @@ namespace Mini_Project___Console_Chess
             { moveType = "diagonal capture"; }
             Console.WriteLine($"{move.Piece.Type} at {move.StartPosition} is attempting to move: {moveType}");
 
+
+            // TODO: en passant: need to implement move history. capture, pawn must have double advanced and end up next to it
+
+
             Square endSquare = boardState.GetSquare(move.EndPosition);
             switch (moveType)
             {
                 case "single advance":
                     // single advance: non capture, forward space must be open
                     if (endSquare.Occupant == null)
-                    { return true; }
+                    { validity = true; }
                     break;
                 case "double advance":
                     // double advance: non capture, two spaces in front of it must be open, must be in starting rank
@@ -78,26 +83,50 @@ namespace Mini_Project___Console_Chess
                     if (boardState.GetSquare(pathCoord).Occupant == null &&
                         move.StartPosition.Rank == startingRank &&
                         endSquare.Occupant == null)
-                    { return true; }
+                    { validity = true; }
                     break;
                 case "diagonal capture":
                     // diagonal capture: capture, diagonal space must have different color piece
                     if(endSquare.Occupant.Color != move.Piece.Color)
                     {
                         endSquare.Occupant.Kill();
-                        return true;
+                        validity = true;
                     }
                     break;
             }
 
+            // promotion: check after completing movement. change piecetype
+            int promotionRank = move.Piece.Color == PieceColor.White ? 7 : 0;
+            if (move.EndPosition.Rank == promotionRank)
+            {
+                Console.WriteLine("\n\tKnight Bishop Rook Queen");
+                Console.Write("Pawn promotion to: ");
+                string input = Console.ReadLine();
+                {
+                    switch(input)
+                    {
+                        case "k":
+                        case "n":
+                        case "knight":
+                            move.Piece.Type = PieceType.Knight;
+                            break;
+                        case "b":
+                        case "bishop":
+                            move.Piece.Type = PieceType.Bishop;
+                            break;
+                        case "r":
+                        case "rook":
+                            move.Piece.Type = PieceType.Rook;
+                            break;
+                        case "q":
+                        case "queen":
+                            move.Piece.Type = PieceType.Queen;
+                            break;
+                    }
+                }
+            }
 
-
-                // en passant: need to implement move history. capture, pawn must have double advanced and end up next to it
-
-                // promotion: can result from single advance or diagonal capture. change type to something else
-
-
-                return false; // if it doesn't match any patterns, return false
+            return validity; // if it doesn't match any patterns, return false
         }
     }
 }
