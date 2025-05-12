@@ -77,12 +77,22 @@ namespace Mini_Project___Console_Chess
         /// <summary>
         /// Update Board[,].Occupant based on Pieces[].Position
         /// </summary>
-        private void UpdateBoard()
+        public void UpdateBoard()
         {
+            Console.WriteLine(Pieces);
+            //reset each square
+            for(int r = 0; r < 8; r++){
+                for (int f = 0; f < 8; f++)
+                {
+                    Board[r,f].Occupant=null;
+                }
+            }
+            //update each square
             foreach(Piece piece in Pieces)
             {
                 Board[piece.Position.Rank, piece.Position.File].Occupant = piece;
             }
+            // Console.ReadKey();
         }
         public bool TryGetOccupant(Coordinate coordinate, out Piece? piece)
         {
@@ -96,12 +106,6 @@ namespace Mini_Project___Console_Chess
                 piece = Board[coordinate.Rank, coordinate.File].Occupant;
                 return true;
             }
-        }
-        
-        public void ExecuteMove(Move move)
-        {
-            // TODO: execute the piece movement
-            UpdateBoard();
         }
     }
 }

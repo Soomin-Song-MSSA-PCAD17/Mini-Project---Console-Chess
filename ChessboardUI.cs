@@ -34,41 +34,42 @@ namespace Mini_Project___Console_Chess
         }
         public void Initialize()
         {
+            Console.SetWindowSize(SquareWidth * 8 + HMargin + 10, SquareHeight * 8 + VMargin + 10);
             Console.OutputEncoding = Encoding.UTF8;
             Console.BackgroundColor = BACKGROUND;
             Console.ForegroundColor = TEXTCOLOR;
-            
-            PrintBoard();
         }
         public void PrintBoard()
         {
+            Backend.UpdateBoard();
             Console.Clear();
-
             Console.ForegroundColor = LABELCOLOR;
 
             // print squares from white's perspective
 
+            #region print board labels
             // print file labels
             for (int f = 0; f < 8; f++)
             {
-                Console.SetCursorPosition(f*SquareWidth+HMargin+1, VMargin-1);
+                Console.SetCursorPosition(f * SquareWidth + HMargin + 1, VMargin - 1);
                 Console.Write(Coordinate.NumToFile(f));
-                Console.SetCursorPosition(f*SquareWidth+HMargin+1, 8*SquareHeight+VMargin);
+                Console.SetCursorPosition(f * SquareWidth + HMargin + 1, 8 * SquareHeight + VMargin);
                 Console.Write(Coordinate.NumToFile(f));
             }
             // print rank labels
             for (int r = 0; r < 8; r++)
             {
-                Console.SetCursorPosition(HMargin-2,(7-r)*SquareHeight+VMargin);
+                Console.SetCursorPosition(HMargin - 2, (7 - r) * SquareHeight + VMargin);
                 Console.Write(Coordinate.NumToRank(r));
-                Console.SetCursorPosition(HMargin+8*SquareWidth+1,(7-r)*SquareHeight+VMargin);
+                Console.SetCursorPosition(HMargin + 8 * SquareWidth + 1, (7 - r) * SquareHeight + VMargin);
                 Console.Write(Coordinate.NumToRank(r));
             }
+            #endregion print board labels
 
             Console.ForegroundColor = TEXTCOLOR;
             for (int rank = 0; rank < 8; rank++)
             {
-                for(int file =  0; file < 8; file++)
+                for (int file = 0; file < 8; file++)
                 {
                     PrintSquare(Backend.Board[rank, file]);
                 }
@@ -76,7 +77,17 @@ namespace Mini_Project___Console_Chess
         }
         public void PrintSquare(Square square)
         {
+            // figure out what goes inside the square
             string text;
+            switch (square.Color)
+            {
+                case SquareColorTypes.dark:
+                    Console.BackgroundColor = DARKSQUAREBG;
+                    break;
+                case SquareColorTypes.light:
+                    Console.BackgroundColor = LIGHTSQUAREBG;
+                    break;
+            }
             if (square.Occupant == null) { text = $" {square.Position.ToAlgebraicNotation()} "; }
             else
             {
@@ -90,7 +101,7 @@ namespace Mini_Project___Console_Chess
                         Console.ForegroundColor = LIGHTPIECEFG;
                         break;
                 }
-                switch(square.Occupant.Type)
+                switch (square.Occupant.Type)
                 {
                     case PieceType.King:
                         text = " ♔  ";
@@ -113,26 +124,16 @@ namespace Mini_Project___Console_Chess
                 }
             }
 
+            // print the square
             Console.SetCursorPosition(
                 (square.Position.File) * SquareWidth + HMargin,
                 (7 - square.Position.Rank) * SquareHeight + VMargin
             );
-
-            if (square.Color == SquareColorTypes.dark)
-            {
-                Console.BackgroundColor = DARKSQUAREBG;
-                Console.Write(text);
-            }
-            if (square.Color == SquareColorTypes.light)
-            {
-                Console.BackgroundColor = LIGHTSQUAREBG;
-                Console.Write(text);
-            }
+            Console.Write(text);
 
             // reset colors
             Console.ForegroundColor = TEXTCOLOR;
             Console.BackgroundColor = BACKGROUND;
-
         }
 
 
@@ -153,27 +154,30 @@ namespace Mini_Project___Console_Chess
             command = Console.ReadLine().Split(' ');
             if (command[0] == "quit")
             {
-            Console.WriteLine(command[0]);
+                Console.WriteLine(command[0]);
                 return false;
             }
 
-            string regexCoordinate = @"[a-h][1-8]";
+            if(command.Length!=2){
+                Console.WriteLine("Invalid number of arguments.");
+                Console.ReadKey();
+                return true;
+            }
+
+            string regexCoordinate = @"[a-h][1-8]"; //regex for algebraic notation
             Regex re = new Regex(regexCoordinate, RegexOptions.IgnoreCase);
             if (re.IsMatch(command[0]) && re.IsMatch(command[1]))
             {
                 //check if input matches regex for validity of coordinate
-                Console.WriteLine("Attempting to move piece.");
                 Piece pieceToMove;
                 if (Backend.TryGetOccupant(new Coordinate(command[0]), out pieceToMove))
                 {
-                    if (pieceToMove == null)
-                    {
-                        Console.WriteLine($"No piece found at position {command[0]}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Found piece {pieceToMove.Type} at {command[0]}, checking if it can move to {command[1]}.");
-                    }
+                    bool moveIsCapture = false; // TODO: check if move is valid
+                    Move newMove = new Move(pieceToMove, new Coordinate(command[1]), moveIsCapture);
+                    newMove.Execute();
+                }
+                else{
+                    Console.WriteLine($"No piece found at {command[0]}.");
                 }
             }
             else

@@ -20,6 +20,16 @@ namespace Mini_Project___Console_Chess
             IsCapture = isCapture;
         }
 
+        /// changes the position of piece
+        /// doesn't check if move is valid
+        public void Execute() {
+            Console.WriteLine($"{Piece.Position.ToAlgebraicNotation()} to {EndPosition.ToAlgebraicNotation()}");
+            Piece.Position.File = EndPosition.File;
+            Piece.Position.Rank = EndPosition.Rank;
+            Console.WriteLine($"New position: {Piece.Position.ToAlgebraicNotation()}");
+        }
+
+        /// check if move is valid before calling Execute();
         public static bool IsValidMove(Piece piece, Coordinate endPosition, bool isCapture, ChessboardBackend boardState)
         {
             Move move = new Move(piece, endPosition, isCapture);
