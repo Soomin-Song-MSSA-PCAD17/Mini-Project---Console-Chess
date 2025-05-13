@@ -26,18 +26,6 @@ namespace Mini_Project___Console_Chess
             Piece.Position.Rank = EndPosition.Rank;
         }
 
-        /// check if move is valid before calling Execute();
-        public static bool IsValidMove(Piece piece, Coordinate endPosition, ChessboardBackend boardState)
-        {
-            Move move = new Move(piece, endPosition);
-            switch(piece.Type)
-            {
-                case PieceType.Pawn:
-                    return IsValidPawnMove(move, boardState);
-                default:
-                    return false; // if it's an unknown piece type, return false
-            }
-        }
         public bool IsValidMove(ChessboardBackend boardState)
         {
             switch (this.Piece.Type)
@@ -101,27 +89,33 @@ namespace Mini_Project___Console_Chess
             {
                 Console.WriteLine("\n\tKnight Bishop Rook Queen");
                 Console.Write("Pawn promotion to: ");
-                string input = Console.ReadLine();
+                while(move.Piece.Type==PieceType.Pawn)
                 {
-                    switch(input)
+                    string input = Console.ReadLine();
                     {
-                        case "k":
-                        case "n":
-                        case "knight":
-                            move.Piece.Type = PieceType.Knight;
-                            break;
-                        case "b":
-                        case "bishop":
-                            move.Piece.Type = PieceType.Bishop;
-                            break;
-                        case "r":
-                        case "rook":
-                            move.Piece.Type = PieceType.Rook;
-                            break;
-                        case "q":
-                        case "queen":
-                            move.Piece.Type = PieceType.Queen;
-                            break;
+                        switch (input)
+                        {
+                            case "k":
+                            case "n":
+                            case "knight":
+                                move.Piece.Type = PieceType.Knight;
+                                break;
+                            case "b":
+                            case "bishop":
+                                move.Piece.Type = PieceType.Bishop;
+                                break;
+                            case "r":
+                            case "rook":
+                                move.Piece.Type = PieceType.Rook;
+                                break;
+                            case "q":
+                            case "queen":
+                                move.Piece.Type = PieceType.Queen;
+                                break;
+                            default:
+                                Console.WriteLine("Invalid selection.");
+                                break;
+                        }
                     }
                 }
             }

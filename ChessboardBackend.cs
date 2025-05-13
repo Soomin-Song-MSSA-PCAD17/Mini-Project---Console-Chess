@@ -79,7 +79,6 @@ namespace Mini_Project___Console_Chess
         /// </summary>
         public void UpdateBoard()
         {
-            Console.WriteLine(Pieces);
             //reset each square
             for(int r = 0; r < 8; r++){
                 for (int f = 0; f < 8; f++)
@@ -121,6 +120,7 @@ namespace Mini_Project___Console_Chess
             if(move.IsValidMove(this))
             {
                 move.Execute();
+                ActivePlayer = ActivePlayer == Player.White ? Player.Black : Player.White; // change active player
                 return true;
             }
             return false;
