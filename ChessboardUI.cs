@@ -136,14 +136,14 @@ namespace Mini_Project___Console_Chess
             Console.BackgroundColor = BACKGROUND;
         }
 
-
         /// <summary>
         /// TODO: WIP, parse and handle commands here
         /// </summary>
         /// <returns>false: end the game.</returns>
         public bool CommandHandler()
         {
-            PrintBoard(); // this might cause some weird display issues later, but for now, it lets you scale console size and fix it up
+            PrintBoard(); // update display
+
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
             Console.Write($"{Backend.ActivePlayerString}'s turn.");
@@ -156,6 +156,16 @@ namespace Mini_Project___Console_Chess
             {
                 Console.WriteLine(command[0]);
                 return false;
+            }
+
+            if (command[0] == "debug")
+            {
+                switch (command[1].ToLower())
+                {
+                    case "trygetoccupant":
+                        Console.WriteLine(Backend.TryGetOccupant(new Coordinate(command[2]), out var piece));
+                        break;
+                }
             }
 
             if(command.Length!=2){
@@ -196,6 +206,5 @@ namespace Mini_Project___Console_Chess
                 continueGame = CommandHandler();
             }
         }
-
     }
 }
