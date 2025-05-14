@@ -19,9 +19,9 @@ namespace Mini_Project___Console_Chess
         public const int HMargin = 12;
         public const ConsoleColor BACKGROUND = ConsoleColor.Black;
         public const ConsoleColor DARKSQUAREBG = ConsoleColor.DarkGray;
-        public const ConsoleColor LIGHTSQUAREBG = ConsoleColor.Yellow;
+        public const ConsoleColor LIGHTSQUAREBG = ConsoleColor.DarkYellow;
         public const ConsoleColor DARKPIECEFG = ConsoleColor.DarkMagenta;
-        public const ConsoleColor LIGHTPIECEFG = ConsoleColor.Cyan;
+        public const ConsoleColor LIGHTPIECEFG = ConsoleColor.Gray;
 
         public const ConsoleColor TEXTCOLOR = ConsoleColor.Black;
         public const ConsoleColor LABELCOLOR = ConsoleColor.Yellow;
