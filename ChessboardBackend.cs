@@ -101,16 +101,29 @@ namespace Mini_Project___Console_Chess
         {
             return Board[coordinate.Rank, coordinate.File];
         }
+
+        /// return true if there's a piece in the square
+        /// return false if it's an invalid square or there's no occupant
         public bool TryGetOccupant(Coordinate coordinate, out Piece? piece)
         {
-            if(Board[coordinate.Rank, coordinate.File].Occupant==null)
+            if(coordinate.Rank<0 || coordinate.Rank>8 || coordinate.File<0 || coordinate.File > 8)
             {
+                // invalid square
+                piece = null;
+                return false;
+            }
+            Square square = Board[coordinate.Rank,coordinate.File];
+
+            if(square.Occupant==null)
+            {
+                // valid square but no piece
                 piece = null;
                 return false;
             }
             else
             {
-                piece = Board[coordinate.Rank, coordinate.File].Occupant;
+                // piece found
+                piece = square.Occupant;
                 return true;
             }
         }

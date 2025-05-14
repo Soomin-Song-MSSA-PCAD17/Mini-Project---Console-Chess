@@ -32,6 +32,8 @@ namespace Mini_Project___Console_Chess
             {
                 case PieceType.Pawn:
                     return IsValidPawnMove(this, boardState);
+                case PieceType.Bishop:
+                    return IsValidBishopMove(this, boardState);
                 default:
                     return false; // if it's an unknown piece type, return false
             }
@@ -119,8 +121,64 @@ namespace Mini_Project___Console_Chess
                     }
                 }
             }
-
             return validity; // if it doesn't match any patterns, return false
+        }
+
+        /// TODO: debug this. Can't seem to make valid moves
+        private static bool IsValidBishopMove(Move move, ChessboardBackend boardState)
+        {
+            // if the move is diagonal, then the change in horizontal and vertical position are the same in magnitude
+            if (Math.Abs(move.StartPosition.Rank - move.EndPosition.Rank) == Math.Abs(move.StartPosition.File - move.EndPosition.File))
+            {
+                Console.WriteLine("This is a diagonal move.");
+                int magnitude = Math.Abs(move.StartPosition.Rank - move.EndPosition.Rank);
+                int rankDirection = move.EndPosition.Rank > move.StartPosition.Rank ? 1 : -1;
+                int fileDirection = move.EndPosition.File > move.StartPosition.File ? 1 : -1;
+                // check if each square along the way is valid
+                // i is the offset from start position (starts at 1)
+                // end before reaching magnitude, because the last space may be occupied so it'll get checked separately after the loop
+                for(int i = 1;i<magnitude;i++)
+                {
+                    // make sure in-between squares are empty
+                    // trygetoccupant the next space
+                    int newRank = move.StartPosition.Rank + rankDirection * i;
+                    int newFile = move.StartPosition.File + fileDirection * i;
+
+                    if (boardState.TryGetOccupant(new Coordinate(newRank, newFile), out Piece shouldBeEmpty))
+                    {
+                        // if occupant value is found, block movement
+                        Console.WriteLine($"Could not execute move. Blocked by {shouldBeEmpty.ToString()}");
+                        return false;
+                    }
+                }
+                // check if last square is either empty or occupied by an opponent's piece
+                boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
+                if(occupant == null)
+                {
+                    // moving into empty square
+                    Console.WriteLine("Moving into empty square.");
+                    return true;
+                }
+                else if(occupant.Color != move.Piece.Color)
+                {
+                    // capturing opponent's piece
+                    Console.WriteLine($"Capturing {occupant.ToString()}.");
+                    occupant.Kill();
+                    return true;
+                }
+                else
+                {
+                    // blocked by piece of own color
+                    Console.WriteLine($"Blocked by {occupant.ToString()}");
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("This is not a diagonal move.");
+                return false;
+            }
+            return false;
         }
     }
 }

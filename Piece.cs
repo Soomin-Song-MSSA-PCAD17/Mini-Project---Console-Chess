@@ -28,6 +28,11 @@ namespace Mini_Project___Console_Chess
             Position.File = -1;
         }
 
+        public override string ToString()
+        {
+            return $"{Color.ToString()} {Type.ToString()} at {Position.ToAlgebraicNotation()}";
+        }
+
         // Instead of GetMoves() to see all valid moves, just check if a move is valid instead
         #region GetMoves()
         //public Move[] GetMoves()
