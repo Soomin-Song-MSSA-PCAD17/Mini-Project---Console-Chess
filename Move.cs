@@ -77,10 +77,13 @@ namespace Mini_Project___Console_Chess
                     break;
                 case "diagonal capture":
                     // diagonal capture: capture, diagonal space must have different color piece
-                    if(endSquare.Occupant.Color != move.Piece.Color)
+                    if(boardState.TryGetOccupant(move.EndPosition,out var occupyingPiece))
                     {
-                        endSquare.Occupant.Kill();
-                        validity = true;
+                        if(occupyingPiece.Color != move.Piece.Color)
+                        {
+                            occupyingPiece.Kill();
+                            validity = true;
+                        }
                     }
                     break;
             }
