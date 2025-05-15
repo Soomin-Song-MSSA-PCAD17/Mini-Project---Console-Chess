@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,13 +10,18 @@ namespace Mini_Project___Console_Chess
     public class Move
     {
         public Piece Piece;
-        public Coordinate StartPosition { get => Piece.Position; }
-        public Coordinate EndPosition;
+        public Coordinate StartPosition { get; set; }
+        public Coordinate EndPosition { get; set; }
+        public int DeltaRank { get => EndPosition.Rank - StartPosition.Rank; }
+        public int DeltaFile { get => EndPosition.File - StartPosition.File; }
+        private bool IsEnPassant;
 
         public Move(Piece piece, Coordinate endPosition)
         {
             Piece = piece;
             EndPosition = endPosition;
+            StartPosition = new Coordinate(Piece.Position.ToAlgebraicNotation());
+            IsEnPassant = false;
         }
 
         /// changes the position of piece
@@ -31,7 +37,14 @@ namespace Mini_Project___Console_Chess
                 {
                     Console.WriteLine($"Capturing {captureTarget}");
                     captureTarget.Kill();
-                }
+                }   
+            }
+            // TODO: en passant capture should trigger Piece.Kill();
+            if (IsEnPassant)
+            {
+                captureTarget = boardState.MoveHistory.Last().Piece;
+                Console.WriteLine($"En passant capturing {captureTarget}");
+                captureTarget.Kill();
             }
             // if open square, just execute movement
             Piece.Position.File = EndPosition.File;
@@ -80,17 +93,23 @@ namespace Mini_Project___Console_Chess
         {
             int forward = move.Piece.Color == PieceColor.White ? 1 : -1;
             bool validity = false;
+            Move lastMove = null;
+            if(boardState.MoveHistory.Count>0) { lastMove = boardState.MoveHistory.Last(); }
 
             string moveType = "no pattern match";
-            if (move.StartPosition.Rank + forward == move.EndPosition.Rank && move.StartPosition.File == move.EndPosition.File)
+            if (move.DeltaRank == forward && move.DeltaFile == 0)
             { moveType = "single advance"; }
-            else if (move.StartPosition.Rank + 2 * forward == move.EndPosition.Rank && move.StartPosition.File == move.EndPosition.File)
+            else if (move.DeltaRank == 2 * forward && move.DeltaFile == 0)
             { moveType = "double advance"; }
-            else if (move.StartPosition.Rank + forward == move.EndPosition.Rank && Math.Abs(move.StartPosition.File - move.EndPosition.File) == 1)
+            else if (lastMove != null &&
+                lastMove.Piece.Type == PieceType.Pawn && Math.Abs(lastMove.DeltaRank) == 2 && // if opponent's pawn double advanced
+                Math.Abs(lastMove.Piece.Position.File - move.Piece.Position.File) == 1 && // if opponent's pawn is next to this pawn
+                move.DeltaRank == forward && Math.Abs(move.DeltaFile) == 1 // diagonal move to capture
+            )
+            { moveType = "en passant"; }
+            else if (move.DeltaRank == forward && Math.Abs(move.DeltaFile) == 1)
             { moveType = "diagonal capture"; }
             Console.WriteLine($"{move.Piece.Type} at {move.StartPosition} is attempting to move: {moveType}");
-
-            // TODO: en passant: need to implement move history. capture, pawn must have double advanced and end up next to it
 
 
             Square endSquare = boardState.GetSquare(move.EndPosition);
@@ -119,6 +138,15 @@ namespace Mini_Project___Console_Chess
                         {
                             validity = true;
                         }
+                    }
+                    break;
+                case "en passant":
+                    if (lastMove.Piece.Position.File == move.EndPosition.File) // if moving behind opponent pawn
+                    {
+                        Console.WriteLine("This is a valid en passant move");
+                        move.IsEnPassant = true;
+                        validity = true;
+                        return validity;
                     }
                     break;
                 default:
