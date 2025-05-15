@@ -189,7 +189,7 @@ namespace Mini_Project___Console_Chess
                     if (boardState.TryGetOccupant(new Coordinate(newRank, newFile), out Piece shouldBeEmpty))
                     {
                         // if occupant value is found, block movement
-                        Console.WriteLine($"Could not execute move. Blocked by {shouldBeEmpty.ToString()}");
+                        Console.WriteLine($"Could not execute move. Blocked by {shouldBeEmpty}");
                         return false;
                     }
                 }
@@ -204,13 +204,13 @@ namespace Mini_Project___Console_Chess
                 else if(occupant.Color != move.Piece.Color)
                 {
                     // capturing opponent's piece
-                    Console.WriteLine($"Capturing {occupant.ToString()}.");
+                    Console.WriteLine($"Capturing {occupant}.");
                     return true;
                 }
                 else
                 {
                     // blocked by piece of own color
-                    Console.WriteLine($"Blocked by {occupant.ToString()}");
+                    Console.WriteLine($"Blocked by {occupant}");
                     return false;
                 }
             }
@@ -219,7 +219,7 @@ namespace Mini_Project___Console_Chess
                 Console.WriteLine("This is not a diagonal move.");
                 return false;
             }
-            Console.WriteLine($"Unknown error while attempting to move {move.Piece.ToString()}");
+            Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
         }
 
@@ -243,17 +243,17 @@ namespace Mini_Project___Console_Chess
                 else if (occupant.Color != move.Piece.Color)
                 {
                     // capturing opponent's piece
-                    Console.WriteLine($"Capturing {occupant.ToString()}.");
+                    Console.WriteLine($"Capturing {occupant}.");
                     return true;
                 }
                 else
                 {
                     // blocked by piece of own color
-                    Console.WriteLine($"Blocked by {occupant.ToString()}");
+                    Console.WriteLine($"Blocked by {occupant}");
                     return false;
                 }
             }
-            Console.WriteLine($"Unknown error while attempting to move {move.Piece.ToString()}");
+            Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
         }
 
@@ -278,7 +278,7 @@ namespace Mini_Project___Console_Chess
                     if (boardState.TryGetOccupant(new Coordinate(newRank, newFile), out Piece shouldBeEmpty))
                     {
                         // if occupant value is found, block movement
-                        Console.WriteLine($"Could not execute move. Blocked by {shouldBeEmpty.ToString()}");
+                        Console.WriteLine($"Could not execute move. Blocked by {shouldBeEmpty}");
                         return false;
                     }
                 }
@@ -293,13 +293,13 @@ namespace Mini_Project___Console_Chess
                 else if (occupant.Color != move.Piece.Color)
                 {
                     // capturing opponent's piece
-                    Console.WriteLine($"Capturing {occupant.ToString()}.");
+                    Console.WriteLine($"Capturing {occupant}.");
                     return true;
                 }
                 else
                 {
                     // blocked by piece of own color
-                    Console.WriteLine($"Blocked by {occupant.ToString()}");
+                    Console.WriteLine($"Blocked by {occupant}");
                     return false;
                 }
             }
@@ -308,7 +308,7 @@ namespace Mini_Project___Console_Chess
                 Console.WriteLine("This is not a straight line move.");
                 return false;
             }
-            Console.WriteLine($"Unknown error while attempting to move {move.Piece.ToString()}");
+            Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
         }
 
@@ -334,13 +334,13 @@ namespace Mini_Project___Console_Chess
                 else if (occupant.Color != move.Piece.Color)
                 {
                     // capturing opponent's piece
-                    Console.WriteLine($"Capturing {occupant.ToString()}.");
+                    Console.WriteLine($"Capturing {occupant}.");
                     return true;
                 }
                 else
                 {
                     // blocked by piece of own color
-                    Console.WriteLine($"Blocked by {occupant.ToString()}");
+                    Console.WriteLine($"Blocked by {occupant}");
                     return false;
                 }
             }
@@ -348,7 +348,7 @@ namespace Mini_Project___Console_Chess
             {
 
             }
-                Console.WriteLine($"Unknown error while attempting to move {move.Piece.ToString()}");
+                Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
         }
     }
