@@ -20,8 +20,20 @@ namespace Mini_Project___Console_Chess
 
         /// changes the position of piece
         /// doesn't check if move is valid
-        public void Execute() {
+        public void Execute(ChessboardBackend boardState)
+        {
             Console.WriteLine($"{Piece.Position.ToAlgebraicNotation()} to {EndPosition.ToAlgebraicNotation()}");
+            // if end position has a piece
+            if (boardState.TryGetOccupant(EndPosition, out Piece? captureTarget))
+            {
+                // if end position's piece is opponent's
+                if (captureTarget != null && captureTarget.Color != Piece.Color)
+                {
+                    Console.WriteLine($"Capturing {captureTarget}");
+                    captureTarget.Kill();
+                }
+            }
+            // if open square, just execute movement
             Piece.Position.File = EndPosition.File;
             Piece.Position.Rank = EndPosition.Rank;
         }
@@ -34,17 +46,18 @@ namespace Mini_Project___Console_Chess
 
         public bool IsValidMove(ChessboardBackend boardState)
         {
-            if(StartPosition==EndPosition)
+            if (StartPosition == EndPosition)
             {
                 Console.WriteLine("The piece did not move.");
                 return false;
             }
-            if ((boardState.ActivePlayer == Player.White && Piece.Color==PieceColor.Black)|| (boardState.ActivePlayer == Player.Black && Piece.Color == PieceColor.White))
+            if ((boardState.ActivePlayer == Player.White && Piece.Color==PieceColor.Black)
+                || (boardState.ActivePlayer == Player.Black && Piece.Color == PieceColor.White))
             {
                 Console.WriteLine("Only the active player's piece can be moved.");
                 return false;
             }
-            switch (this.Piece.Type)
+            switch (Piece.Type)
             {
                 case PieceType.Pawn:
                     return IsValidPawnMove(this, boardState);
@@ -77,7 +90,6 @@ namespace Mini_Project___Console_Chess
             { moveType = "diagonal capture"; }
             Console.WriteLine($"{move.Piece.Type} at {move.StartPosition} is attempting to move: {moveType}");
 
-
             // TODO: en passant: need to implement move history. capture, pawn must have double advanced and end up next to it
 
 
@@ -103,15 +115,14 @@ namespace Mini_Project___Console_Chess
                     // diagonal capture: capture, diagonal space must have different color piece
                     if(boardState.TryGetOccupant(move.EndPosition,out var occupyingPiece))
                     {
-                        if(occupyingPiece.Color != move.Piece.Color)
+                        if (occupyingPiece.Color != move.Piece.Color)
                         {
-                            occupyingPiece.Kill();
                             validity = true;
                         }
                     }
                     break;
                 default:
-                    Console.WriteLine($"No pattern match while attempting to move {move.Piece.ToString()}");
+                    Console.WriteLine($"No pattern match while attempting to move {move.Piece}");
                     break;
             }
 
@@ -194,7 +205,6 @@ namespace Mini_Project___Console_Chess
                 {
                     // capturing opponent's piece
                     Console.WriteLine($"Capturing {occupant.ToString()}.");
-                    occupant.Kill();
                     return true;
                 }
                 else
@@ -234,7 +244,6 @@ namespace Mini_Project___Console_Chess
                 {
                     // capturing opponent's piece
                     Console.WriteLine($"Capturing {occupant.ToString()}.");
-                    occupant.Kill();
                     return true;
                 }
                 else
@@ -285,7 +294,6 @@ namespace Mini_Project___Console_Chess
                 {
                     // capturing opponent's piece
                     Console.WriteLine($"Capturing {occupant.ToString()}.");
-                    occupant.Kill();
                     return true;
                 }
                 else
@@ -294,7 +302,6 @@ namespace Mini_Project___Console_Chess
                     Console.WriteLine($"Blocked by {occupant.ToString()}");
                     return false;
                 }
-
             }
             else
             {
@@ -315,7 +322,7 @@ namespace Mini_Project___Console_Chess
             int deltaRank = move.EndPosition.Rank - move.StartPosition.Rank;
             int deltaFile = move.EndPosition.File - move.StartPosition.File;
             // King can only move 1 space sideways or diagonally
-            if( Math.Abs(deltaRank) <= 1&& Math.Abs(deltaFile) <= 1)
+            if(Math.Abs(deltaRank) <= 1 && Math.Abs(deltaFile) <= 1)
             {
                 boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
                 if (occupant == null)
@@ -328,7 +335,6 @@ namespace Mini_Project___Console_Chess
                 {
                     // capturing opponent's piece
                     Console.WriteLine($"Capturing {occupant.ToString()}.");
-                    occupant.Kill();
                     return true;
                 }
                 else

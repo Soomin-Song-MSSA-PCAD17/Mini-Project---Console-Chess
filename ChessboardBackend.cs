@@ -134,7 +134,7 @@ namespace Mini_Project___Console_Chess
             if (!TryGetOccupant(move.StartPosition, out Piece occupant)) { return false; } // moving fails if there's no piece to move at start position
             if(move.IsValidMove(this))
             {
-                move.Execute();
+                move.Execute(this);
                 MoveHistory.Add(move);
                 ActivePlayer = ActivePlayer == Player.White ? Player.Black : Player.White; // change active player
                 return true;
