@@ -13,10 +13,12 @@ namespace Mini_Project___Console_Chess
         public List<Piece> Pieces;
         public Player ActivePlayer;
         public string ActivePlayerString { get=>ActivePlayer==Player.White?"White":"Black"; }
+        public List<Move> MoveHistory;
         public ChessboardBackend()
         {
             Board = InitializeBoard();
             Pieces = InitializePieces();
+            MoveHistory = [];
             ActivePlayer = Player.White;
             UpdateBoard();
         }
@@ -133,6 +135,7 @@ namespace Mini_Project___Console_Chess
             if(move.IsValidMove(this))
             {
                 move.Execute();
+                MoveHistory.Add(move);
                 ActivePlayer = ActivePlayer == Player.White ? Player.Black : Player.White; // change active player
                 return true;
             }

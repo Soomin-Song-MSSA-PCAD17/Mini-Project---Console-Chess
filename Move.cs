@@ -26,9 +26,24 @@ namespace Mini_Project___Console_Chess
             Piece.Position.Rank = EndPosition.Rank;
         }
 
+        // TODO: after move history, have a way to display summarized move history
+        public string ToAlgebraicNotation()
+        {
+            return "";
+        }
+
         public bool IsValidMove(ChessboardBackend boardState)
         {
-            if(StartPosition==EndPosition) { return false; }
+            if(StartPosition==EndPosition)
+            {
+                Console.WriteLine("The piece did not move.");
+                return false;
+            }
+            if ((boardState.ActivePlayer == Player.White && Piece.Color==PieceColor.Black)|| (boardState.ActivePlayer == Player.Black && Piece.Color == PieceColor.White))
+            {
+                Console.WriteLine("Only the active player's piece can be moved.");
+                return false;
+            }
             switch (this.Piece.Type)
             {
                 case PieceType.Pawn:
@@ -41,6 +56,8 @@ namespace Mini_Project___Console_Chess
                     return IsValidRookMove(this, boardState);
                 case PieceType.Queen:
                     return IsValidQueenMove(this, boardState);
+                case PieceType.King:
+                    return IsValidKingMove(this, boardState);
                 default:
                     return false; // if it's an unknown piece type, return false
             }
@@ -284,12 +301,49 @@ namespace Mini_Project___Console_Chess
                 Console.WriteLine("This is not a straight line move.");
                 return false;
             }
+            Console.WriteLine($"Unknown error while attempting to move {move.Piece.ToString()}");
             return false;
         }
 
         private static bool IsValidQueenMove(Move move, ChessboardBackend boardState)
         {
             return IsValidBishopMove(move, boardState) || IsValidRookMove(move, boardState);
+        }
+
+        private static bool IsValidKingMove(Move move, ChessboardBackend boardState)
+        {
+            int deltaRank = move.EndPosition.Rank - move.StartPosition.Rank;
+            int deltaFile = move.EndPosition.File - move.StartPosition.File;
+            // King can only move 1 space sideways or diagonally
+            if( Math.Abs(deltaRank) <= 1&& Math.Abs(deltaFile) <= 1)
+            {
+                boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
+                if (occupant == null)
+                {
+                    // moving into empty square
+                    Console.WriteLine("Moving into empty square.");
+                    return true;
+                }
+                else if (occupant.Color != move.Piece.Color)
+                {
+                    // capturing opponent's piece
+                    Console.WriteLine($"Capturing {occupant.ToString()}.");
+                    occupant.Kill();
+                    return true;
+                }
+                else
+                {
+                    // blocked by piece of own color
+                    Console.WriteLine($"Blocked by {occupant.ToString()}");
+                    return false;
+                }
+            }
+            else if (false) // TODO: castling. Need move history
+            {
+
+            }
+                Console.WriteLine($"Unknown error while attempting to move {move.Piece.ToString()}");
+            return false;
         }
     }
 }
