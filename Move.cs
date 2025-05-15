@@ -35,6 +35,8 @@ namespace Mini_Project___Console_Chess
                     return IsValidPawnMove(this, boardState);
                 case PieceType.Bishop:
                     return IsValidBishopMove(this, boardState);
+                case PieceType.Knight:
+                    return IsValidKnightMove(this, boardState);
                 case PieceType.Rook:
                     return IsValidRookMove(this, boardState);
                 default:
@@ -88,6 +90,9 @@ namespace Mini_Project___Console_Chess
                             validity = true;
                         }
                     }
+                    break;
+                default:
+                    Console.WriteLine($"No pattern match while attempting to move {move.Piece.ToString()}");
                     break;
             }
 
@@ -185,6 +190,42 @@ namespace Mini_Project___Console_Chess
                 Console.WriteLine("This is not a diagonal move.");
                 return false;
             }
+            Console.WriteLine($"Unknown error while attempting to move {move.Piece.ToString()}");
+            return false;
+        }
+
+        private static bool IsValidKnightMove(Move move, ChessboardBackend boardState)
+        {
+            int deltaRank = move.EndPosition.Rank - move.StartPosition.Rank;
+            int deltaFile = move.EndPosition.File - move.StartPosition.File;
+            int magnitude = Math.Abs(deltaRank)+Math.Abs(deltaFile);
+
+            // if total magnitude is 3 but not straight line move, move is valid
+            if(magnitude==3 && deltaRank!=0 && deltaFile != 0)
+            {
+                Console.WriteLine("This is an L-shaped move.");
+                boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
+                if (occupant == null)
+                {
+                    // moving into empty square
+                    Console.WriteLine("Moving into empty square.");
+                    return true;
+                }
+                else if (occupant.Color != move.Piece.Color)
+                {
+                    // capturing opponent's piece
+                    Console.WriteLine($"Capturing {occupant.ToString()}.");
+                    occupant.Kill();
+                    return true;
+                }
+                else
+                {
+                    // blocked by piece of own color
+                    Console.WriteLine($"Blocked by {occupant.ToString()}");
+                    return false;
+                }
+            }
+            Console.WriteLine($"Unknown error while attempting to move {move.Piece.ToString()}");
             return false;
         }
 
@@ -194,7 +235,6 @@ namespace Mini_Project___Console_Chess
             if ((move.StartPosition.Rank == move.EndPosition.Rank) || (move.StartPosition.File == move.EndPosition.File))
             {
                 Console.WriteLine("This is a straight line move.");
-                // TODO: write the rest of this, start with pseudocode
                 // check all squares between start and end
                 int magnitude = Math.Abs((move.EndPosition.Rank - move.StartPosition.Rank) + (move.EndPosition.File - move.StartPosition.File));
                 int rankDirection = (move.EndPosition.Rank - move.StartPosition.Rank) / magnitude;
