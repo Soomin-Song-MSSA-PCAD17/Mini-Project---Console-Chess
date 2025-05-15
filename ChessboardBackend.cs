@@ -131,7 +131,7 @@ namespace Mini_Project___Console_Chess
         }
         public bool TryMove(Move move)
         {
-            if (!TryGetOccupant(move.StartPosition, out Piece occupant)) { return false; } // moving fails if there's no piece to move at start position
+            if (!TryGetOccupant(move.StartPosition, out Piece? occupant)) { return false; } // moving fails if there's no piece to move at start position
             if(move.IsValidMove(this))
             {
                 move.Execute(this);

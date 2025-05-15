@@ -113,9 +113,9 @@ namespace Mini_Project___Console_Chess
                     break;
                 case "diagonal capture":
                     // diagonal capture: capture, diagonal space must have different color piece
-                    if(boardState.TryGetOccupant(move.EndPosition,out var occupyingPiece))
+                    if(boardState.TryGetOccupant(move.EndPosition,out Piece? occupyingPiece))
                     {
-                        if (occupyingPiece.Color != move.Piece.Color)
+                        if ((occupyingPiece!=null) && (occupyingPiece.Color != move.Piece.Color))
                         {
                             validity = true;
                         }
@@ -135,7 +135,7 @@ namespace Mini_Project___Console_Chess
                 Console.Write("Pawn promotion to: ");
                 while(move.Piece.Type==PieceType.Pawn)
                 {
-                    string input = Console.ReadLine();
+                    string? input = Console.ReadLine();
                     {
                         switch (input)
                         {
@@ -186,15 +186,15 @@ namespace Mini_Project___Console_Chess
                     int newRank = move.StartPosition.Rank + rankDirection * i;
                     int newFile = move.StartPosition.File + fileDirection * i;
 
-                    if (boardState.TryGetOccupant(new Coordinate(newRank, newFile), out Piece shouldBeEmpty))
+                    if (boardState.TryGetOccupant(new Coordinate(newRank, newFile), out Piece? blocker))
                     {
                         // if occupant value is found, block movement
-                        Console.WriteLine($"Could not execute move. Blocked by {shouldBeEmpty}");
+                        Console.WriteLine($"Could not execute move. Blocked by {blocker}");
                         return false;
                     }
                 }
                 // check if last square is either empty or occupied by an opponent's piece
-                boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
+                boardState.TryGetOccupant(move.EndPosition, out Piece? occupant);
                 if(occupant == null)
                 {
                     // moving into empty square
@@ -219,8 +219,6 @@ namespace Mini_Project___Console_Chess
                 Console.WriteLine("This is not a diagonal move.");
                 return false;
             }
-            Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
-            return false;
         }
 
         private static bool IsValidKnightMove(Move move, ChessboardBackend boardState)
@@ -233,7 +231,7 @@ namespace Mini_Project___Console_Chess
             if(magnitude==3 && deltaRank!=0 && deltaFile != 0)
             {
                 Console.WriteLine("This is an L-shaped move.");
-                boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
+                boardState.TryGetOccupant(move.EndPosition, out Piece? occupant);
                 if (occupant == null)
                 {
                     // moving into empty square
@@ -275,15 +273,15 @@ namespace Mini_Project___Console_Chess
                     int newRank = move.StartPosition.Rank + rankDirection * i;
                     int newFile = move.StartPosition.File + fileDirection * i;
 
-                    if (boardState.TryGetOccupant(new Coordinate(newRank, newFile), out Piece shouldBeEmpty))
+                    if (boardState.TryGetOccupant(new Coordinate(newRank, newFile), out Piece? blocker))
                     {
                         // if occupant value is found, block movement
-                        Console.WriteLine($"Could not execute move. Blocked by {shouldBeEmpty}");
+                        Console.WriteLine($"Could not execute move. Blocked by {blocker}");
                         return false;
                     }
                 }
                 // check last square to see if it's empty or capture
-                boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
+                boardState.TryGetOccupant(move.EndPosition, out Piece? occupant);
                 if (occupant == null)
                 {
                     // moving into empty square
@@ -308,8 +306,6 @@ namespace Mini_Project___Console_Chess
                 Console.WriteLine("This is not a straight line move.");
                 return false;
             }
-            Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
-            return false;
         }
 
         private static bool IsValidQueenMove(Move move, ChessboardBackend boardState)
@@ -322,9 +318,9 @@ namespace Mini_Project___Console_Chess
             int deltaRank = move.EndPosition.Rank - move.StartPosition.Rank;
             int deltaFile = move.EndPosition.File - move.StartPosition.File;
             // King can only move 1 space sideways or diagonally
-            if(Math.Abs(deltaRank) <= 1 && Math.Abs(deltaFile) <= 1)
+            if (Math.Abs(deltaRank) <= 1 && Math.Abs(deltaFile) <= 1)
             {
-                boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
+                boardState.TryGetOccupant(move.EndPosition, out Piece? occupant);
                 if (occupant == null)
                 {
                     // moving into empty square
@@ -344,9 +340,10 @@ namespace Mini_Project___Console_Chess
                     return false;
                 }
             }
-            else if (false) // TODO: castling. Need move history
+            else if (deltaFile == 2 || deltaFile == -3) // TODO: castling. Need move history
             {
-
+                Console.WriteLine("Attempting to castle.");
+                
             }
                 Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
