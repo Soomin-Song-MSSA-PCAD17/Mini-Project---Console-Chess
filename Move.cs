@@ -39,6 +39,8 @@ namespace Mini_Project___Console_Chess
                     return IsValidKnightMove(this, boardState);
                 case PieceType.Rook:
                     return IsValidRookMove(this, boardState);
+                case PieceType.Queen:
+                    return IsValidQueenMove(this, boardState);
                 default:
                     return false; // if it's an unknown piece type, return false
             }
@@ -283,6 +285,11 @@ namespace Mini_Project___Console_Chess
                 return false;
             }
             return false;
+        }
+
+        private static bool IsValidQueenMove(Move move, ChessboardBackend boardState)
+        {
+            return IsValidBishopMove(move, boardState) || IsValidRookMove(move, boardState);
         }
     }
 }
