@@ -34,7 +34,7 @@ namespace Mini_Project___Console_Chess
         }
         public void Initialize()
         {
-            Console.SetWindowSize(SquareWidth * 8 + HMargin + 10, SquareHeight * 8 + VMargin + 10);
+            // Console.SetWindowSize(SquareWidth * 8 + HMargin + 10, SquareHeight * 8 + VMargin + 10);
             Console.OutputEncoding = Encoding.UTF8;
             Console.BackgroundColor = BACKGROUND;
             Console.ForegroundColor = TEXTCOLOR;
@@ -142,8 +142,6 @@ namespace Mini_Project___Console_Chess
         /// <returns>false: end the game.</returns>
         public bool CommandHandler()
         {
-            PrintBoard(); // update display
-
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
             Console.Write($"{Backend.ActivePlayerString}'s turn.");
@@ -183,8 +181,6 @@ namespace Mini_Project___Console_Chess
                 if (Backend.TryGetOccupant(new Coordinate(command[0]), out pieceToMove))
                 {
                     Backend.TryMove(new Move(pieceToMove, new Coordinate(command[1])));
-                    //Move newMove = new Move(pieceToMove, new Coordinate(command[1]));
-                    //newMove.Execute();
                 }
                 else
                 {
@@ -195,6 +191,7 @@ namespace Mini_Project___Console_Chess
             {
                 Console.WriteLine($"{command[0]} or {command[1]} is not a valid coordinate.");
             }
+            Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             return true;
         }
