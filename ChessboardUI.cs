@@ -168,6 +168,7 @@ namespace Mini_Project___Console_Chess
             if (command.Length != 2)
             {
                 Console.WriteLine("Invalid number of arguments.");
+                Console.WriteLine("Press any key to continue...");
                 Console.ReadKey();
                 return true;
             }
@@ -201,6 +202,8 @@ namespace Mini_Project___Console_Chess
             bool continueGame = true;
             while (continueGame)
             {
+                Console.Clear();
+                PrintBoard(); // update display
                 continueGame = CommandHandler();
             }
         }
