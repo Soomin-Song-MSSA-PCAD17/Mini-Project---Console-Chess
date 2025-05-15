@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Mini_Project___Console_Chess
 {
-    public enum PieceColor { White='W', Black='B' }
-    public enum PieceType { King, Queen, Bishop, Knight, Rook, Pawn};
+    public enum PieceColor { White = 'W', Black = 'B' }
+    public enum PieceType { King, Queen, Bishop, Knight, Rook, Pawn };
     public class Piece
     {
         public PieceColor Color { get; set; }

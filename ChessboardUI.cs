@@ -137,7 +137,7 @@ namespace Mini_Project___Console_Chess
         }
 
         /// <summary>
-        /// TODO: WIP, parse and handle commands here
+        /// parse and handle commands here
         /// </summary>
         /// <returns>false: end the game.</returns>
         public bool CommandHandler()
@@ -150,8 +150,7 @@ namespace Mini_Project___Console_Chess
             Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 3);
             Console.Write("Input command: ");
 
-            string[] command = [];
-            command = Console.ReadLine().Split(' ');
+            string[] command = Console.ReadLine().Split(' ');
             if (command[0] == "quit")
             {
                 Console.WriteLine(command[0]);
@@ -168,7 +167,8 @@ namespace Mini_Project___Console_Chess
                 }
             }
 
-            if(command.Length!=2){
+            if (command.Length != 2)
+            {
                 Console.WriteLine("Invalid number of arguments.");
                 Console.ReadKey();
                 return true;
@@ -186,7 +186,8 @@ namespace Mini_Project___Console_Chess
                     //Move newMove = new Move(pieceToMove, new Coordinate(command[1]));
                     //newMove.Execute();
                 }
-                else{
+                else
+                {
                     Console.WriteLine($"No piece found at {command[0]}.");
                 }
             }

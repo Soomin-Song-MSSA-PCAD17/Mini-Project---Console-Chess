@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Mini_Project___Console_Chess
 {
-    public enum Player { White='W', Black='B' }
+    public enum Player { White = 'W', Black = 'B' }
     public class ChessboardBackend
     {
         public Square[,] Board;
         public List<Piece> Pieces;
         public Player ActivePlayer;
-        public string ActivePlayerString { get=>ActivePlayer==Player.White?"White":"Black"; }
+        public string ActivePlayerString { get => ActivePlayer == Player.White ? "White" : "Black"; }
         public List<Move> MoveHistory;
         public ChessboardBackend()
         {
@@ -55,7 +55,7 @@ namespace Mini_Project___Console_Chess
                 new(PieceColor.White,PieceType.Pawn,new Coordinate("f2")),
                 new(PieceColor.White,PieceType.Pawn,new Coordinate("g2")),
                 new(PieceColor.White,PieceType.Pawn,new Coordinate("h2")),
-                
+
                 new(PieceColor.Black,PieceType.Pawn,new Coordinate("a7")),
                 new(PieceColor.Black,PieceType.Pawn,new Coordinate("b7")),
                 new(PieceColor.Black,PieceType.Pawn,new Coordinate("c7")),
@@ -82,14 +82,15 @@ namespace Mini_Project___Console_Chess
         public void UpdateBoard()
         {
             //reset each square
-            for(int r = 0; r < 8; r++){
+            for (int r = 0; r < 8; r++)
+            {
                 for (int f = 0; f < 8; f++)
                 {
-                    Board[r,f].Occupant=null;
+                    Board[r, f].Occupant = null;
                 }
             }
             //update each square
-            foreach(Piece piece in this.Pieces)
+            foreach (Piece piece in Pieces)
             {
                 if (piece.IsCaptured) { }
                 else
@@ -108,15 +109,15 @@ namespace Mini_Project___Console_Chess
         /// return false if it's an invalid square or there's no occupant
         public bool TryGetOccupant(Coordinate coordinate, out Piece? piece)
         {
-            if(coordinate.Rank<0 || coordinate.Rank>8 || coordinate.File<0 || coordinate.File > 8)
+            if (coordinate.Rank < 0 || coordinate.Rank > 8 || coordinate.File < 0 || coordinate.File > 8)
             {
                 // invalid square
                 piece = null;
                 return false;
             }
-            Square square = Board[coordinate.Rank,coordinate.File];
+            Square square = Board[coordinate.Rank, coordinate.File];
 
-            if(square.Occupant==null)
+            if (square.Occupant == null)
             {
                 // valid square but no piece
                 piece = null;
@@ -132,7 +133,7 @@ namespace Mini_Project___Console_Chess
         public bool TryMove(Move move)
         {
             if (!TryGetOccupant(move.StartPosition, out Piece? occupant)) { return false; } // moving fails if there's no piece to move at start position
-            if(move.IsValidMove(this))
+            if (move.IsValidMove(this))
             {
                 move.Execute(this);
                 MoveHistory.Add(move);
