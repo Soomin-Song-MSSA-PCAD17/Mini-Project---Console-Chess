@@ -28,12 +28,15 @@ namespace Mini_Project___Console_Chess
 
         public bool IsValidMove(ChessboardBackend boardState)
         {
+            if(StartPosition==EndPosition) { return false; }
             switch (this.Piece.Type)
             {
                 case PieceType.Pawn:
                     return IsValidPawnMove(this, boardState);
                 case PieceType.Bishop:
                     return IsValidBishopMove(this, boardState);
+                case PieceType.Rook:
+                    return IsValidRookMove(this, boardState);
                 default:
                     return false; // if it's an unknown piece type, return false
             }
@@ -89,6 +92,7 @@ namespace Mini_Project___Console_Chess
             }
 
             // promotion: check after completing movement. change piecetype
+            #region pawn promotion
             int promotionRank = move.Piece.Color == PieceColor.White ? 7 : 0;
             if (move.EndPosition.Rank == promotionRank)
             {
@@ -124,10 +128,10 @@ namespace Mini_Project___Console_Chess
                     }
                 }
             }
+            #endregion
             return validity; // if it doesn't match any patterns, return false
         }
 
-        /// TODO: debug this. Can't seem to make valid moves
         private static bool IsValidBishopMove(Move move, ChessboardBackend boardState)
         {
             // if the move is diagonal, then the change in horizontal and vertical position are the same in magnitude
@@ -179,6 +183,63 @@ namespace Mini_Project___Console_Chess
             else
             {
                 Console.WriteLine("This is not a diagonal move.");
+                return false;
+            }
+            return false;
+        }
+
+        private static bool IsValidRookMove(Move move, ChessboardBackend boardState)
+        {
+            // if the move is straight, it's a valid rook move
+            if ((move.StartPosition.Rank == move.EndPosition.Rank) || (move.StartPosition.File == move.EndPosition.File))
+            {
+                Console.WriteLine("This is a straight line move.");
+                // TODO: write the rest of this, start with pseudocode
+                // check all squares between start and end
+                int magnitude = Math.Abs((move.EndPosition.Rank - move.StartPosition.Rank) + (move.EndPosition.File - move.StartPosition.File));
+                int rankDirection = (move.EndPosition.Rank - move.StartPosition.Rank) / magnitude;
+                int fileDirection = (move.EndPosition.File - move.StartPosition.File) / magnitude;
+
+                for (int i = 1; i < magnitude; i++)
+                {
+                    // make sure in-between squares are empty
+                    // trygetoccupant the next space
+                    int newRank = move.StartPosition.Rank + rankDirection * i;
+                    int newFile = move.StartPosition.File + fileDirection * i;
+
+                    if (boardState.TryGetOccupant(new Coordinate(newRank, newFile), out Piece shouldBeEmpty))
+                    {
+                        // if occupant value is found, block movement
+                        Console.WriteLine($"Could not execute move. Blocked by {shouldBeEmpty.ToString()}");
+                        return false;
+                    }
+                }
+                // check last square to see if it's empty or capture
+                boardState.TryGetOccupant(move.EndPosition, out Piece occupant);
+                if (occupant == null)
+                {
+                    // moving into empty square
+                    Console.WriteLine("Moving into empty square.");
+                    return true;
+                }
+                else if (occupant.Color != move.Piece.Color)
+                {
+                    // capturing opponent's piece
+                    Console.WriteLine($"Capturing {occupant.ToString()}.");
+                    occupant.Kill();
+                    return true;
+                }
+                else
+                {
+                    // blocked by piece of own color
+                    Console.WriteLine($"Blocked by {occupant.ToString()}");
+                    return false;
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("This is not a straight line move.");
                 return false;
             }
             return false;
