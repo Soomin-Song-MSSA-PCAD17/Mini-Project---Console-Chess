@@ -109,7 +109,7 @@ namespace Mini_Project___Console_Chess
         /// return false if it's an invalid square or there's no occupant
         public bool TryGetOccupant(Coordinate coordinate, out Piece? piece)
         {
-            if (coordinate.Rank < 0 || coordinate.Rank > 8 || coordinate.File < 0 || coordinate.File > 8)
+            if (coordinate.Rank < 0 || coordinate.Rank > 7 || coordinate.File < 0 || coordinate.File > 7)
             {
                 // invalid square
                 piece = null;
