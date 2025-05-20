@@ -28,6 +28,16 @@ namespace Mini_Project___Console_Chess
             Position.File = -1;
         }
 
+        public bool WasMoved(ChessboardBackend boardState)
+        {
+            bool wasMoved = false;
+            boardState.MoveHistory.ForEach(delegate (Move x)
+            {
+                if (x.Piece == this) { wasMoved = true; }
+            });
+            return wasMoved;
+        }
+
         public override string ToString()
         {
             return $"{Color.ToString()} {Type.ToString()} at {Position.ToAlgebraicNotation()}";

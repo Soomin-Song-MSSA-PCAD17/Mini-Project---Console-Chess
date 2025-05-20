@@ -59,9 +59,18 @@ namespace Mini_Project___Console_Chess
 
         public bool IsValidMove(ChessboardBackend boardState)
         {
-            if (StartPosition == EndPosition)
+            bool isValid = false;
+
+            // also check if moving will open up your own king
+            // if the move captures enemy king, it's fine. (this prevents potentially infinite recursion)
+            if (StartPosition.Rank == -1)
             {
-                Console.WriteLine("The piece did not move.");
+                Console.WriteLine($"{Piece} has already been captured.");
+                return false;
+            }
+            if (StartPosition.Rank==EndPosition.Rank && StartPosition.File==EndPosition.File)
+            {
+                Console.WriteLine($"{Piece} did not move.");
                 return false;
             }
             if ((boardState.ActivePlayer == Player.White && Piece.Color == PieceColor.Black)
@@ -73,20 +82,41 @@ namespace Mini_Project___Console_Chess
             switch (Piece.Type)
             {
                 case PieceType.Pawn:
-                    return IsValidPawnMove(this, boardState);
+                    isValid = IsValidPawnMove(this, boardState);
+                    break;
                 case PieceType.Bishop:
-                    return IsValidBishopMove(this, boardState);
+                    isValid = IsValidBishopMove(this, boardState);
+                    break;
                 case PieceType.Knight:
-                    return IsValidKnightMove(this, boardState);
+                    isValid = IsValidKnightMove(this, boardState);
+                    break;
                 case PieceType.Rook:
-                    return IsValidRookMove(this, boardState);
+                    isValid = IsValidRookMove(this, boardState);
+                    break;
                 case PieceType.Queen:
-                    return IsValidQueenMove(this, boardState);
+                    isValid = IsValidQueenMove(this, boardState);
+                    break;
                 case PieceType.King:
-                    return IsValidKingMove(this, boardState);
+                    isValid = IsValidKingMove(this, boardState);
+                    break;
                 default:
                     return false; // if it's an unknown piece type, return false
+                    break;
             }
+            if(!isValid) { return false; }
+
+            // is this a valid move and does this capture opponent's king? if so, no need to check if this opens up your own king
+            if(boardState.TryGetOccupant(EndPosition, out Piece occupant))
+            {
+                if(occupant.Color != Piece.Color && occupant.Type==PieceType.King) //occupant is opponent's king
+                {
+                    return true;
+                } 
+            }
+            // if it's a valid move but doesn't capture opponent's king, does this open up your own king? if so, return false
+
+
+            return true; // if it's a valid move but no restrictions, return true
         }
 
         private static bool IsValidPawnMove(Move move, ChessboardBackend boardState)
@@ -343,9 +373,10 @@ namespace Mini_Project___Console_Chess
 
         private static bool IsValidKingMove(Move move, ChessboardBackend boardState)
         {
+            // TODO: Need to implement a way to check if a square is attacked
             int deltaRank = move.EndPosition.Rank - move.StartPosition.Rank;
             int deltaFile = move.EndPosition.File - move.StartPosition.File;
-            // King can only move 1 space sideways or diagonally
+            // normally, King can only move 1 space sideways or diagonally
             if (Math.Abs(deltaRank) <= 1 && Math.Abs(deltaFile) <= 1)
             {
                 boardState.TryGetOccupant(move.EndPosition, out Piece? occupant);
@@ -368,10 +399,49 @@ namespace Mini_Project___Console_Chess
                     return false;
                 }
             }
-            else if (deltaFile == 2 || deltaFile == -3) // TODO: castling. Need move history
+            else if (deltaFile == 2) // kingside castle
             {
-                Console.WriteLine("Attempting to castle.");
+                Console.WriteLine("Attempting to kingside castle.");
+                // make sure king hasn't moved
+                if(move.Piece.WasMoved(boardState)) { Console.WriteLine($"{move.Piece} has been moved already."); return false; }
+                // make sure rook hasn't moved
+                if(boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank,move.Piece.Position.File+3),out Piece rook))
+                {
+                    if(rook.WasMoved(boardState)) { Console.WriteLine($"{rook} has been moved already."); return false; }
+                }
+                // make sure all the spaces are open
+                for(int i = 1; i <= 2; i++)
+                {
+                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece shouldBeEmpty))
+                    {
+                        if(shouldBeEmpty!=null) { Console.WriteLine($"{shouldBeEmpty} is blocking the path."); return false; }
+                    }
+                }
+                // TODO: make sure all the spaces are not attacked
 
+                return true;
+            }
+            else if (deltaFile == -3) // queenside castle
+            {
+                Console.WriteLine("Attempting to queenside castle.");
+                // make sure king hasn't moved
+                if (move.Piece.WasMoved(boardState)) { Console.WriteLine($"{move.Piece} has been moved already."); return false; }
+                // make sure rook hasn't moved
+                if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File-4), out Piece rook))
+                {
+                    if (rook.WasMoved(boardState)) { Console.WriteLine($"{rook} has been moved already."); return false; }
+                }
+                // make sure all the spaces are open
+                for (int i = -1; i >= -3; i--)
+                {
+                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece shouldBeEmpty))
+                    {
+                        if (shouldBeEmpty != null) { Console.WriteLine($"{shouldBeEmpty} is blocking the path."); return false; }
+                    }
+                }
+                // TODO: make sure all the spaces are not attacked
+
+                return true;
             }
             Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
