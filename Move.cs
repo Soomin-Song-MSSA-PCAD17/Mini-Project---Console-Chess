@@ -405,7 +405,14 @@ namespace Mini_Project___Console_Chess
                     if(rook.WasMoved()) { return false; }
                 }
                 // make sure all the spaces are open
-                // make sure all the spaces are not attacked
+                for(int i = 1; i <= 2; i++)
+                {
+                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece shouldBeEmpty))
+                    {
+                        if(shouldBeEmpty!=null) { return false; }
+                    }
+                }
+                // TODO: make sure all the spaces are not attacked
 
                 return true;
             }
@@ -420,7 +427,14 @@ namespace Mini_Project___Console_Chess
                     if (rook.WasMoved()) { return false; }
                 }
                 // make sure all the spaces are open
-                // make sure all the spaces are not attacked
+                for (int i = -1; i >= -3; i--)
+                {
+                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece shouldBeEmpty))
+                    {
+                        if (shouldBeEmpty != null) { return false; }
+                    }
+                }
+                // TODO: make sure all the spaces are not attacked
 
                 return true;
             }
