@@ -63,6 +63,11 @@ namespace Mini_Project___Console_Chess
 
             // also check if moving will open up your own king
             // if the move captures enemy king, it's fine. (this prevents potentially infinite recursion)
+            if (StartPosition.Rank == -1)
+            {
+                Console.WriteLine($"{Piece} has already been captured.");
+                return false;
+            }
             if (StartPosition.Rank==EndPosition.Rank && StartPosition.File==EndPosition.File)
             {
                 Console.WriteLine($"{Piece} did not move.");
