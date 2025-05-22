@@ -162,6 +162,12 @@ namespace Mini_Project___Console_Chess
                     case "trygetoccupant":
                         Console.WriteLine(Backend.TryGetOccupant(new Coordinate(command[2]), out var piece));
                         break;
+                    case "isattackedby":
+                        int[] rankAndFile = Coordinate.FromAlgebraicNotation(command[2]);
+                        bool attackedByWhite = Backend.Board[rankAndFile[0], rankAndFile[1]].IsAttackedBy(Player.White,Backend);
+                        bool attackedByBlack = Backend.Board[rankAndFile[0], rankAndFile[1]].IsAttackedBy(Player.Black,Backend);
+                        Console.WriteLine($"{command[2]} is attacked by:\n\tWhite: {attackedByWhite}\n\tBlack: {attackedByBlack}");
+                        break;
                 }
             }
 
@@ -178,8 +184,7 @@ namespace Mini_Project___Console_Chess
             if (re.IsMatch(command[0]) && re.IsMatch(command[1]))
             {
                 //check if input matches regex for validity of coordinate
-                Piece pieceToMove;
-                if (Backend.TryGetOccupant(new Coordinate(command[0]), out pieceToMove))
+                if (Backend.TryGetOccupant(new Coordinate(command[0]), out Piece? pieceToMove))
                 {
                     Backend.TryMove(new Move(pieceToMove, new Coordinate(command[1])));
                 }

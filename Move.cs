@@ -53,15 +53,19 @@ namespace Mini_Project___Console_Chess
                 {
                     //Kingside castle
                     Console.WriteLine("Executing Kingside castle");
-                    boardState.TryGetOccupant(new(EndPosition.Rank, EndPosition.File + 1), out Piece rook);
-                    new Move(rook, new(EndPosition.Rank, EndPosition.File - 1)).Execute(boardState);
+                    if(boardState.TryGetOccupant(new(EndPosition.Rank, EndPosition.File + 1), out Piece? rook))
+                    {
+                        new Move(rook, new(EndPosition.Rank, EndPosition.File - 1)).Execute(boardState);
+                    }
                 }
                 else
                 {
                     //Queenside castle
                     Console.WriteLine("Executing Queenside castle");
-                    boardState.TryGetOccupant(new(EndPosition.Rank, EndPosition.File - 1), out Piece rook);
-                    new Move(rook, new(EndPosition.Rank, EndPosition.File + 1)).Execute(boardState);
+                    if(boardState.TryGetOccupant(new(EndPosition.Rank, EndPosition.File - 1), out Piece? rook))
+                    {
+                        new Move(rook, new(EndPosition.Rank, EndPosition.File + 1)).Execute(boardState);
+                    }
                 }
                 // Move for rook can be instantiated without affecting move history
                 
@@ -121,12 +125,11 @@ namespace Mini_Project___Console_Chess
                     break;
                 default:
                     return false; // if it's an unknown piece type, return false
-                    break;
             }
             if(!isValid) { return false; }
 
             // is this a valid move and does this capture opponent's king? if so, no need to check if this opens up your own king
-            if(boardState.TryGetOccupant(EndPosition, out Piece occupant))
+            if(boardState.TryGetOccupant(EndPosition, out Piece? occupant))
             {
                 if(occupant.Color != Piece.Color && occupant.Type==PieceType.King) //occupant is opponent's king
                 {
@@ -425,14 +428,14 @@ namespace Mini_Project___Console_Chess
                 // make sure king hasn't moved
                 if(move.Piece.WasMoved(boardState)) { Console.WriteLine($"{move.Piece} has been moved already."); return false; }
                 // make sure rook hasn't moved
-                if(boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank,move.Piece.Position.File+3),out Piece rook))
+                if(boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank,move.Piece.Position.File+3),out Piece? rook))
                 {
                     if(rook.WasMoved(boardState)) { Console.WriteLine($"{rook} has been moved already."); return false; }
                 }
                 // make sure all the spaces are open
                 for(int i = 1; i <= 2; i++)
                 {
-                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece shouldBeEmpty))
+                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece? shouldBeEmpty))
                     {
                         if(shouldBeEmpty!=null) { Console.WriteLine($"{shouldBeEmpty} is blocking the path."); return false; }
                     }
@@ -447,14 +450,14 @@ namespace Mini_Project___Console_Chess
                 // make sure king hasn't moved
                 if (move.Piece.WasMoved(boardState)) { Console.WriteLine($"{move.Piece} has been moved already."); return false; }
                 // make sure rook hasn't moved
-                if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File-4), out Piece rook))
+                if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File-4), out Piece? rook))
                 {
                     if (rook.WasMoved(boardState)) { Console.WriteLine($"{rook} has been moved already."); return false; }
                 }
                 // make sure all the spaces are open
                 for (int i = -1; i >= -3; i--)
                 {
-                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece shouldBeEmpty))
+                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece? shouldBeEmpty))
                     {
                         if (shouldBeEmpty != null) { Console.WriteLine($"{shouldBeEmpty} is blocking the path."); return false; }
                     }

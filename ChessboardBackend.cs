@@ -22,6 +22,7 @@ namespace Mini_Project___Console_Chess
             ActivePlayer = Player.White;
             UpdateBoard();
         }
+
         private Square[,] InitializeBoard()
         {
             var board = new Square[8, 8];

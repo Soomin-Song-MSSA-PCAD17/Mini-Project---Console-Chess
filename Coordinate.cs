@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +45,14 @@ namespace Mini_Project___Console_Chess
         {
             if(IsValidSpace) { return $"{Files[File]}{Ranks[Rank]}"; }
             else { return "--"; }
+        }
+
+        public static int[] FromAlgebraicNotation(string algebraicNotation)
+        {
+            int[] output = [-1, -1];
+            output[0] = algebraicNotation[0] - 'a';
+            output[1] = algebraicNotation[1] - '1';
+            return output;
         }
 
         public static char NumToFile(int fileIndex)
