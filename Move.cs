@@ -15,6 +15,7 @@ namespace Mini_Project___Console_Chess
         public int DeltaRank { get => EndPosition.Rank - StartPosition.Rank; }
         public int DeltaFile { get => EndPosition.File - StartPosition.File; }
         private bool IsEnPassant;
+        private bool IsCastling;
 
         public Move(Piece piece, Coordinate endPosition)
         {
@@ -39,12 +40,31 @@ namespace Mini_Project___Console_Chess
                     captureTarget.Kill();
                 }   
             }
-            // TODO: en passant capture should trigger Piece.Kill();
             if (IsEnPassant)
             {
                 captureTarget = boardState.MoveHistory.Last().Piece;
                 Console.WriteLine($"En passant capturing {captureTarget}");
                 captureTarget.Kill();
+            }
+            if (IsCastling)
+            {
+                // TODO: implement moving rook
+                if (DeltaFile == 2)
+                {
+                    //Kingside castle
+                    Console.WriteLine("Executing Kingside castle");
+                    boardState.TryGetOccupant(new(EndPosition.Rank, EndPosition.File + 1), out Piece rook);
+                    new Move(rook, new(EndPosition.Rank, EndPosition.File - 1)).Execute(boardState);
+                }
+                else
+                {
+                    //Queenside castle
+                    Console.WriteLine("Executing Queenside castle");
+                    boardState.TryGetOccupant(new(EndPosition.Rank, EndPosition.File - 1), out Piece rook);
+                    new Move(rook, new(EndPosition.Rank, EndPosition.File + 1)).Execute(boardState);
+                }
+                // Move for rook can be instantiated without affecting move history
+                
             }
             // if open square, just execute movement
             Piece.Position.File = EndPosition.File;
@@ -418,7 +438,7 @@ namespace Mini_Project___Console_Chess
                     }
                 }
                 // TODO: make sure all the spaces are not attacked
-
+                move.IsCastling = true;
                 return true;
             }
             else if (deltaFile == -3) // queenside castle
@@ -440,7 +460,7 @@ namespace Mini_Project___Console_Chess
                     }
                 }
                 // TODO: make sure all the spaces are not attacked
-
+                move.IsCastling = true;
                 return true;
             }
             Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
