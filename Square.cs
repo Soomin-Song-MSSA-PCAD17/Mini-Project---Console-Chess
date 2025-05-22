@@ -13,5 +13,15 @@
             if ((rank + file) % 2 == 0) { Color = SquareColorTypes.dark; }
             else { Color = SquareColorTypes.light; }
         }
+        public bool IsAttackedBy(Player player, ChessboardBackend boardState)
+        {
+            // TODO: implement this for checks
+            // check for enemy pawns along the two diagonals
+            // check for enemy bishops and queens along the four diagonals
+            // check for enemy rooks and queens along the four orthogonals
+            // check for enemy knights from 8 possible squares
+            // check for enemy kings from adjacent spaces
+            return false;
+        }
     }
 }
