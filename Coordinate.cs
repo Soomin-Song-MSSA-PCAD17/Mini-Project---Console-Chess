@@ -75,7 +75,7 @@ namespace Mini_Project___Console_Chess
 
         public override string ToString()
         {
-            return $"{Files[File]}{Ranks[Rank]}";
+            return ToAlgebraicNotation();
         }
     }
 }

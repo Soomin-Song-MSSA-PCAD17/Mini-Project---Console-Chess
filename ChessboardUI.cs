@@ -170,6 +170,14 @@ namespace Mini_Project___Console_Chess
                         bool attackedByBlack = Backend.Board[rankAndFile[0], rankAndFile[1]].IsAttackedBy(Player.Black,Backend);
                         Console.WriteLine($"{command[2]} is attacked by:\n\tWhite: {attackedByWhite}\n\tBlack: {attackedByBlack}");
                         break;
+                    case "checkforcheck":
+                        Coordinate newCoordinate = new Coordinate(command[3]);
+                        if (Backend.TryGetOccupant(new Coordinate(command[2]), out Piece pieceToMove))
+                        {
+                            Move newMove = new Move(pieceToMove, newCoordinate);
+                            ChessboardBackend.MoveDoesNotPutOwnKingInCheck(newMove, Backend);
+                        }
+                        break;
                 }
             }
 

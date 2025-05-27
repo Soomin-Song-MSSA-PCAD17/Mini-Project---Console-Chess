@@ -96,16 +96,10 @@ namespace Mini_Project___Console_Chess
         {
             bool isValid = false;
 
-            // also check if moving will open up your own king
-            // if the move captures enemy king, it's fine. (this prevents potentially infinite recursion)
+            // TODO: also check if moving will open up your own king
             if (StartPosition.Rank == -1)
             {
                 Console.WriteLine($"{Piece} has already been captured.");
-                return false;
-            }
-            if (StartPosition.Rank==EndPosition.Rank && StartPosition.File==EndPosition.File)
-            {
-                Console.WriteLine($"{Piece} did not move.");
                 return false;
             }
             if ((boardState.ActivePlayer == Player.White && Piece.Color == PieceColor.Black)
@@ -114,6 +108,12 @@ namespace Mini_Project___Console_Chess
                 Console.WriteLine("Only the active player's piece can be moved.");
                 return false;
             }
+            if (StartPosition.Rank == EndPosition.Rank && StartPosition.File == EndPosition.File)
+            {
+                Console.WriteLine($"{Piece} did not move.");
+                return false;
+            }
+
             switch (Piece.Type)
             {
                 case PieceType.Pawn:
@@ -214,7 +214,8 @@ namespace Mini_Project___Console_Chess
                     }
                     break;
                 default:
-                    Console.WriteLine($"No pattern match while attempting to move {move.Piece}");
+                    Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}.");
+                    return false;
                     break;
             }
 
@@ -290,7 +291,7 @@ namespace Mini_Project___Console_Chess
                 if (occupant == null)
                 {
                     // moving into empty square
-                    Console.WriteLine("Moving into empty square.");
+                    //Console.WriteLine("Moving into empty square.");
                     return true;
                 }
                 else if (occupant.Color != move.Piece.Color)
@@ -308,7 +309,7 @@ namespace Mini_Project___Console_Chess
             }
             else
             {
-                Console.WriteLine("This is not a diagonal move.");
+                Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}.");
                 return false;
             }
         }
@@ -327,7 +328,7 @@ namespace Mini_Project___Console_Chess
                 if (occupant == null)
                 {
                     // moving into empty square
-                    Console.WriteLine("Moving into empty square.");
+                    //Console.WriteLine("Moving into empty square.");
                     return true;
                 }
                 else if (occupant.Color != move.Piece.Color)
@@ -342,6 +343,11 @@ namespace Mini_Project___Console_Chess
                     Console.WriteLine($"Blocked by {occupant}");
                     return false;
                 }
+            }
+            else
+            {
+                Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}.");
+                return false;
             }
             Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
@@ -377,7 +383,7 @@ namespace Mini_Project___Console_Chess
                 if (occupant == null)
                 {
                     // moving into empty square
-                    Console.WriteLine("Moving into empty square.");
+                    //Console.WriteLine("Moving into empty square.");
                     return true;
                 }
                 else if (occupant.Color != move.Piece.Color)
@@ -395,7 +401,7 @@ namespace Mini_Project___Console_Chess
             }
             else
             {
-                Console.WriteLine("This is not a straight line move.");
+                Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}.");
                 return false;
             }
         }
@@ -417,7 +423,7 @@ namespace Mini_Project___Console_Chess
                 if (occupant == null)
                 {
                     // moving into empty square
-                    Console.WriteLine("Moving into empty square.");
+                    //Console.WriteLine("Moving into empty square.");
                     return true;
                 }
                 else if (occupant.Color != move.Piece.Color)
@@ -477,8 +483,14 @@ namespace Mini_Project___Console_Chess
                 move.IsCastling = true;
                 return true;
             }
+            else
+            {
+                Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}.");
+                return false;
+            }
             Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
         }
+        public override string ToString() { return $"{Piece.Color} {Piece.Type} from {StartPosition} to {EndPosition}"; }
     }
 }
