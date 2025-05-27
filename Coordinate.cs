@@ -41,6 +41,12 @@ namespace Mini_Project___Console_Chess
             Rank = Ranks.FirstOrDefault(x => x.Value == rank).Key;
         }
 
+        public Coordinate(Coordinate original)
+        {
+            Rank = original.Rank;
+            File = original.File;
+        }
+
         public string ToAlgebraicNotation()
         {
             if(IsValidSpace) { return $"{Files[File]}{Ranks[Rank]}"; }
