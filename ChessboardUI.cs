@@ -162,26 +162,28 @@ namespace Mini_Project___Console_Chess
                 switch (command[1].ToLower())
                 {
                     case "trygetoccupant":
+                    case "tgo":
                         Console.WriteLine(Backend.TryGetOccupant(new Coordinate(command[2]), out var piece));
                         break;
                     case "isattackedby":
+                    case "iab":
                         int[] rankAndFile = Coordinate.FromAlgebraicNotation(command[2]);
                         bool attackedByWhite = Backend.Board[rankAndFile[0], rankAndFile[1]].IsAttackedBy(Player.White,Backend);
                         bool attackedByBlack = Backend.Board[rankAndFile[0], rankAndFile[1]].IsAttackedBy(Player.Black,Backend);
                         Console.WriteLine($"{command[2]} is attacked by:\n\tWhite: {attackedByWhite}\n\tBlack: {attackedByBlack}");
                         break;
                     case "checkforcheck":
+                    case "c4c":
                         Coordinate newCoordinate = new Coordinate(command[3]);
                         if (Backend.TryGetOccupant(new Coordinate(command[2]), out Piece pieceToMove))
                         {
                             Move newMove = new Move(pieceToMove, newCoordinate);
-                            ChessboardBackend.MoveDoesNotPutOwnKingInCheck(newMove, Backend);
+                            Move.MoveDoesNotPutOwnKingInCheck(newMove, Backend);
                         }
                         break;
                 }
             }
-
-            if (command.Length != 2)
+            else if (command.Length != 2)
             {
                 Console.WriteLine("Invalid number of arguments.");
                 Console.WriteLine("Press any key to continue...");
@@ -195,22 +197,17 @@ namespace Mini_Project___Console_Chess
             {
                 //check if input matches regex for validity of coordinate
                 if (Backend.TryGetOccupant(new Coordinate(command[0]), out Piece? pieceToMove))
-                {
-                    Backend.TryMove(new Move(pieceToMove, new Coordinate(command[1])));
-                }
+                { Backend.TryMove(new Move(pieceToMove, new Coordinate(command[1]))); }
                 else
-                {
-                    Console.WriteLine($"No piece found at {command[0]}.");
-                }
+                { Console.WriteLine($"No piece found at {command[0]}."); }
             }
             else
-            {
-                Console.WriteLine($"{command[0]} or {command[1]} is not a valid coordinate.");
-            }
+            { Console.WriteLine($"{command[0]} or {command[1]} is not a valid coordinate."); }
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             return true;
         }
+
         public void Run()
         {
             Console.Clear();

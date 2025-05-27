@@ -94,50 +94,57 @@ namespace Mini_Project___Console_Chess
 
         public bool IsValidMove(ChessboardBackend boardState)
         {
+            bool cantBeMoved = false;
             bool isValid = false;
 
             // TODO: also check if moving will open up your own king
             if (StartPosition.Rank == -1)
             {
                 Console.WriteLine($"{Piece} has already been captured.");
-                return false;
+                cantBeMoved = true;
             }
             if ((boardState.ActivePlayer == Player.White && Piece.Color == PieceColor.Black)
                 || (boardState.ActivePlayer == Player.Black && Piece.Color == PieceColor.White))
             {
                 Console.WriteLine("Only the active player's piece can be moved.");
-                return false;
+                cantBeMoved = true;
             }
             if (StartPosition.Rank == EndPosition.Rank && StartPosition.File == EndPosition.File)
             {
                 Console.WriteLine($"{Piece} did not move.");
-                return false;
+                cantBeMoved = true;
             }
 
-            switch (Piece.Type)
+            if (!cantBeMoved)
             {
-                case PieceType.Pawn:
-                    isValid = IsValidPawnMove(this, boardState);
-                    break;
-                case PieceType.Bishop:
-                    isValid = IsValidBishopMove(this, boardState);
-                    break;
-                case PieceType.Knight:
-                    isValid = IsValidKnightMove(this, boardState);
-                    break;
-                case PieceType.Rook:
-                    isValid = IsValidRookMove(this, boardState);
-                    break;
-                case PieceType.Queen:
-                    isValid = IsValidQueenMove(this, boardState);
-                    break;
-                case PieceType.King:
-                    isValid = IsValidKingMove(this, boardState);
-                    break;
-                default:
-                    return false; // if it's an unknown piece type, return false
+                switch (Piece.Type)
+                {
+                    case PieceType.Pawn:
+                        isValid = IsValidPawnMove(this, boardState);
+                        break;
+                    case PieceType.Bishop:
+                        isValid = IsValidBishopMove(this, boardState);
+                        break;
+                    case PieceType.Knight:
+                        isValid = IsValidKnightMove(this, boardState);
+                        break;
+                    case PieceType.Rook:
+                        isValid = IsValidRookMove(this, boardState);
+                        break;
+                    case PieceType.Queen:
+                        isValid = IsValidQueenMove(this, boardState);
+                        break;
+                    case PieceType.King:
+                        isValid = IsValidKingMove(this, boardState);
+                        break;
+                    default:
+                        return false; // if it's an unknown piece type, return false
+                }
             }
+
             if(!isValid) { return false; }
+
+            // TODO: check 
 
             // is this a valid move and does this capture opponent's king? if so, no need to check if this opens up your own king
             if(boardState.TryGetOccupant(EndPosition, out Piece? occupant))
@@ -225,7 +232,7 @@ namespace Mini_Project___Console_Chess
             if (move.EndPosition.Rank == promotionRank)
             {
                 Console.WriteLine("\n\tKnight Bishop Rook Queen");
-                Console.Write("Pawn promotion to: ");
+                Console.Write("Promote pawn to: ");
                 while (move.Piece.Type == PieceType.Pawn)
                 {
                     string? input = Console.ReadLine();
@@ -491,6 +498,45 @@ namespace Mini_Project___Console_Chess
             Console.WriteLine($"Unknown error while attempting to move {move.Piece}");
             return false;
         }
+
+        public static bool MoveDoesNotPutOwnKingInCheck(Move move, ChessboardBackend boardState)
+        {
+            Player color = move.Piece.Color == PieceColor.White ? Player.White : Player.Black;
+            ChessboardBackend copy = new ChessboardBackend(boardState);
+            // execute the move on the copy
+            copy.TryGetOccupant(move.StartPosition, out Piece newPiece);
+            Move newMove = new Move(newPiece, move.EndPosition);
+            newMove.Execute(copy);
+
+            // see if the move causes king to be in check
+            Piece ownKing = copy.Pieces.Find(pc => (pc.Color == move.Piece.Color) && (pc.Type == PieceType.King));
+            List<Piece> checking = new List<Piece> { };
+            ChessboardBackend.ToggleActivePlayer(copy); // change active player in order to check what pieces can move into king's space
+            foreach (Piece piece in copy.Pieces)
+            {
+                if (piece.Color != ownKing.Color) // easier on the messages
+                {
+                    Move attackKing = new Move(piece, ownKing.Position);
+                    if (attackKing.IsValidMove(copy)) { checking.Add(piece); }
+                }
+            }
+
+            foreach (Piece piece in checking)
+            {
+                Console.WriteLine($"{piece} is attacking {ownKing}");
+            }
+            if (checking.Count == 0)
+            {
+                Console.WriteLine($"No enemy pieces are attacking {ownKing}");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Move cannot be executed because {ownKing} would be in check.");
+                return false;
+            }
+        }
+
         public override string ToString() { return $"{Piece.Color} {Piece.Type} from {StartPosition} to {EndPosition}"; }
     }
 }

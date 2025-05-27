@@ -134,10 +134,10 @@ namespace Mini_Project___Console_Chess
             }
             // Console.ReadKey();
         }
-        private void ToggleActivePlayer()
+        public static void ToggleActivePlayer(ChessboardBackend backend)
         {
-            if(ActivePlayer==Player.White) { ActivePlayer = Player.Black; }
-            else { ActivePlayer = Player.White; }
+            if(backend.ActivePlayer==Player.White) { backend.ActivePlayer = Player.Black; }
+            else { backend.ActivePlayer = Player.White; }
         }
         public Square GetSquare(Coordinate coordinate)
         {
@@ -181,42 +181,6 @@ namespace Mini_Project___Console_Chess
             }
             return false;
         }
-        public static bool MoveDoesNotPutOwnKingInCheck(Move move, ChessboardBackend boardState)
-        {
-            Player color = move.Piece.Color == PieceColor.White ? Player.White : Player.Black;
-            ChessboardBackend copy = new ChessboardBackend(boardState);
-            // TODO: execute the move on the copy
-            copy.TryGetOccupant(move.StartPosition, out Piece newPiece);
-            Move newMove = new Move(newPiece, move.EndPosition);
-            newMove.Execute(copy);
-
-            // TODO: see if the move causes king to be in check
-            Piece ownKing = copy.Pieces.Find(pc=>(pc.Color==move.Piece.Color)&&(pc.Type==PieceType.King));
-            List<Piece> checking = new List<Piece>{ };
-            copy.ToggleActivePlayer(); // change active player in order to check what pieces can move into king's space
-            foreach (Piece piece in copy.Pieces)
-            {
-                Move attackKing = new Move(piece, ownKing.Position);
-                if (attackKing.IsValidMove(copy))
-                {
-                    checking.Add(piece);
-                }
-            }
-
-            foreach (Piece piece in checking)
-            {
-                Console.WriteLine($"{piece} is attacking {ownKing}");
-            }
-            if (checking.Count == 0)
-            {
-                Console.WriteLine($"No enemy pieces are attacking {ownKing}");
-                return true;
-            }
-            else
-            {
-                Console.WriteLine($"Move cannot be executed because {ownKing} would be in check.");
-                return false;
-            }
-        }
+        
     }
 }
