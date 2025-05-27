@@ -10,7 +10,7 @@ namespace Mini_Project___Console_Chess
 {
     public class ChessboardUI
     {
-        ChessboardBackend Backend { get; set; }
+        private ChessboardBackend Backend { get; set; }
 
         #region constants
         public const int SquareWidth = 4;
@@ -38,6 +38,8 @@ namespace Mini_Project___Console_Chess
             Console.OutputEncoding = Encoding.UTF8;
             Console.BackgroundColor = BACKGROUND;
             Console.ForegroundColor = TEXTCOLOR;
+
+            Backend.Initialize();
         }
         public void PrintBoard()
         {

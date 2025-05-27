@@ -16,14 +16,47 @@ namespace Mini_Project___Console_Chess
         public List<Move> MoveHistory;
         public ChessboardBackend()
         {
-            Board = InitializeBoard();
-            Pieces = InitializePieces();
-            MoveHistory = [];
-            ActivePlayer = Player.White;
+            Initialize();
             UpdateBoard();
         }
+        
+        /// deep copy the original board
+        public ChessboardBackend(ChessboardBackend original)
+        {
+            // copy active player
+            ActivePlayer = original.ActivePlayer;
 
-        private Square[,] InitializeBoard()
+            // make new pieces
+            Dictionary<Piece,Piece> originalToCopyDict = new Dictionary<Piece, Piece>{ };
+            Pieces = new List<Piece>{ };
+            foreach (Piece piece in original.Pieces)
+            {
+                Piece newPiece = new Piece(piece.Color, piece.Type, new Coordinate(piece.Position));
+                Pieces.Add(newPiece);
+                originalToCopyDict[piece] = newPiece;
+            }
+
+            // make new board and populate it with pieces
+            Board = InitializeBoard();
+            UpdateBoard();
+            // copy move history
+            MoveHistory = [];
+            foreach (Move move in original.MoveHistory)
+            {
+                MoveHistory.Add(new Move(originalToCopyDict[move.Piece],move.StartPosition,move.EndPosition));
+            }
+
+        }
+
+        public void Initialize()
+        {
+            Board = InitializeBoard();
+            Pieces= InitializePieces();
+            MoveHistory = [];
+            ActivePlayer = Player.White;
+        }
+
+        private static Square[,] InitializeBoard()
         {
             var board = new Square[8, 8];
             for (int r = 0; r < 8; r++)
@@ -35,7 +68,7 @@ namespace Mini_Project___Console_Chess
             }
             return board;
         }
-        private List<Piece> InitializePieces()
+        private static List<Piece> InitializePieces()
         {
             // generate all 32 pieces
             List<Piece> pieces =
