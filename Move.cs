@@ -23,6 +23,17 @@ namespace Mini_Project___Console_Chess
             EndPosition = endPosition;
             StartPosition = new Coordinate(Piece.Position.ToAlgebraicNotation());
             IsEnPassant = false;
+            IsCastling = false;
+        }
+
+        /// use for deep copy
+        public Move(Piece piece, Coordinate startPosition, Coordinate endPosition)
+        {
+            Piece = piece;
+            StartPosition = startPosition;
+            EndPosition = endPosition;
+            IsEnPassant = false;
+            IsCastling = false;
         }
 
         /// changes the position of piece
