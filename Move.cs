@@ -71,7 +71,7 @@ namespace Mini_Project___Console_Chess
                 {
                     //Queenside castle
                     if (verbose) { Console.WriteLine($"{Piece} moving to {EndPosition} to execute queenside castle"); }
-                    if (boardState.TryGetOccupant(new(EndPosition.Rank, EndPosition.File - 1), out Piece? rook))
+                    if (boardState.TryGetOccupant(new(EndPosition.Rank, EndPosition.File - 2), out Piece? rook))
                     { new Move(rook, new(EndPosition.Rank, EndPosition.File + 1)).Execute(boardState); }
                 }
             }
@@ -494,7 +494,6 @@ namespace Mini_Project___Console_Chess
 
         private static bool IsValidKingMove(Move move, ChessboardBackend boardState, bool verbose = true)
         {
-            // TODO: Need to implement a way to check if a square is attacked
             int deltaRank = move.EndPosition.Rank - move.StartPosition.Rank;
             int deltaFile = move.EndPosition.File - move.StartPosition.File;
             // normally, King can only move 1 space sideways or diagonally
@@ -520,6 +519,7 @@ namespace Mini_Project___Console_Chess
                     return false;
                 }
             }
+
             else if (deltaFile == 2) // kingside castle
             {
                 if (verbose) { Console.WriteLine($"{move.Piece} is attempting to move: kingside castle"); }
@@ -541,20 +541,31 @@ namespace Mini_Project___Console_Chess
                 // make sure all the spaces are open
                 for(int i = 1; i <= 2; i++)
                 {
-                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece? shouldBeEmpty))
+                    Coordinate castlingPath = new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i);
+                    if (boardState.TryGetOccupant(castlingPath, out Piece? shouldBeEmpty))
                     {
                         if(shouldBeEmpty!=null)
                         {
                             if (verbose) { Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}: blocked by {shouldBeEmpty}"); }
                             return false;
                         }
+                    } 
+                }
+                // make sure all the spaces are unattacked
+                for(int i = 0; i <= 2; i++)
+                {
+                    Coordinate castlingPath = new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i);
+                    if (!MoveDoesNotPutOwnKingInCheck(new Move(move.Piece, castlingPath), boardState))
+                    {
+                        if (verbose) { Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}: {castlingPath} is under attack"); }
+                        return false;
                     }
                 }
-                // TODO: make sure all the spaces are not attacked
+
                 move.IsCastling = true;
                 return true;
             }
-            else if (deltaFile == -3) // queenside castle
+            else if (deltaFile == -2) // queenside castle
             {
                 if (verbose) { Console.WriteLine($"{move.Piece} is attempting to move: queenside castle"); }
                 // make sure king hasn't moved
@@ -575,7 +586,8 @@ namespace Mini_Project___Console_Chess
                 // make sure all the spaces are open
                 for (int i = -1; i >= -3; i--)
                 {
-                    if (boardState.TryGetOccupant(new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i), out Piece? shouldBeEmpty))
+                    Coordinate castlingPath = new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i);
+                    if (boardState.TryGetOccupant(castlingPath, out Piece? shouldBeEmpty))
                     {
                         if (shouldBeEmpty != null)
                         {
@@ -584,7 +596,16 @@ namespace Mini_Project___Console_Chess
                         }
                     }
                 }
-                // TODO: make sure all the spaces are not attacked
+                // make sure all the spaces are unattacked
+                for (int i = 0; i >= -2; i--)
+                {
+                    Coordinate castlingPath = new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i);
+                    if (!MoveDoesNotPutOwnKingInCheck(new Move(move.Piece, castlingPath), boardState))
+                    {
+                        if (verbose) { Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}: {castlingPath} is under attack"); }
+                        return false;
+                    }
+                }
                 move.IsCastling = true;
                 return true;
             }
