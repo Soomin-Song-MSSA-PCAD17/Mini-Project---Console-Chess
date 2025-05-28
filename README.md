@@ -12,6 +12,7 @@ Algebraic move notations are not supported at this time.
 
 ## Demo
 [Demo Video](https://soomin-song-mssa-pcad17.github.io/Mini-Project---Console-Chess/)
+
 ![Screenshot1](./media/Screenshot1.png)
 ![Screenshot2](./media/Screenshot2.png)
 ![Screenshot3](./media/Screenshot3.png)
