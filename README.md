@@ -11,6 +11,7 @@ Algebraic move notations are not supported at this time.
 `quit` to concede.
 
 ## Demo
+[Demo Video](./media/Demo.mp4)
 ![Screenshot1](./media/Screenshot1.png)
 ![Screenshot2](./media/Screenshot2.png)
 ![Screenshot3](./media/Screenshot3.png)
