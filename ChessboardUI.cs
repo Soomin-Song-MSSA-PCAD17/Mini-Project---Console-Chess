@@ -166,13 +166,6 @@ namespace Mini_Project___Console_Chess
                     case "tgo":
                         Console.WriteLine(Backend.TryGetOccupant(new Coordinate(command[2]), out var piece));
                         break;
-                    case "isattackedby":
-                    case "iab":
-                        int[] rankAndFile = Coordinate.FromAlgebraicNotation(command[2]);
-                        bool attackedByWhite = Backend.Board[rankAndFile[0], rankAndFile[1]].IsAttackedBy(Player.White,Backend);
-                        bool attackedByBlack = Backend.Board[rankAndFile[0], rankAndFile[1]].IsAttackedBy(Player.Black,Backend);
-                        Console.WriteLine($"{command[2]} is attacked by:\n\tWhite: {attackedByWhite}\n\tBlack: {attackedByBlack}");
-                        break;
                     case "checkforcheck":
                     case "c4c":
                         Coordinate newCoordinate = new Coordinate(command[3]);

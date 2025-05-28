@@ -14,21 +14,6 @@
             else { Color = SquareColorTypes.light; }
         }
 
-        public bool IsAttackedBy(Player player, ChessboardBackend boardState)
-        {
-            // TODO: implement this for checks
-            //foreach (Piece piece in boardState.Pieces)
-            //{
-            //    bool colorMatches = (piece.Color == PieceColor.White && player == Player.White) || (piece.Color == PieceColor.Black && player == Player.Black);
-            //    if (colorMatches)
-            //    {
-            //        Move move = new(piece, Position);
-            //        if (move.IsValidMove(boardState,justChecking:true)) { return true; }
-            //    }
-            //}
-            return false;
-        }
-
         public override string ToString()
         {
             return Position.ToString();
