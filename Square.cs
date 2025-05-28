@@ -13,5 +13,10 @@
             if ((rank + file) % 2 == 0) { Color = SquareColorTypes.dark; }
             else { Color = SquareColorTypes.light; }
         }
+
+        public override string ToString()
+        {
+            return Position.ToString();
+        }
     }
 }

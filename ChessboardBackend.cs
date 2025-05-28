@@ -16,13 +16,47 @@ namespace Mini_Project___Console_Chess
         public List<Move> MoveHistory;
         public ChessboardBackend()
         {
-            Board = InitializeBoard();
-            Pieces = InitializePieces();
-            MoveHistory = [];
-            ActivePlayer = Player.White;
+            Initialize();
             UpdateBoard();
         }
-        private Square[,] InitializeBoard()
+        
+        /// deep copy the original board
+        public ChessboardBackend(ChessboardBackend original)
+        {
+            // copy active player
+            ActivePlayer = original.ActivePlayer;
+
+            // make new pieces
+            Dictionary<Piece,Piece> originalToCopyDict = new Dictionary<Piece, Piece>{ };
+            Pieces = new List<Piece>{ };
+            foreach (Piece piece in original.Pieces)
+            {
+                Piece newPiece = new Piece(piece.Color, piece.Type, new Coordinate(piece.Position));
+                Pieces.Add(newPiece);
+                originalToCopyDict[piece] = newPiece;
+            }
+
+            // make new board and populate it with pieces
+            Board = InitializeBoard();
+            UpdateBoard();
+            // copy move history
+            MoveHistory = [];
+            foreach (Move move in original.MoveHistory)
+            {
+                MoveHistory.Add(new Move(originalToCopyDict[move.Piece], move.StartPosition, move.EndPosition));
+            }
+
+        }
+
+        public void Initialize()
+        {
+            Board = InitializeBoard();
+            Pieces= InitializePieces();
+            MoveHistory = [];
+            ActivePlayer = Player.White;
+        }
+
+        private static Square[,] InitializeBoard()
         {
             var board = new Square[8, 8];
             for (int r = 0; r < 8; r++)
@@ -34,7 +68,7 @@ namespace Mini_Project___Console_Chess
             }
             return board;
         }
-        private List<Piece> InitializePieces()
+        private static List<Piece> InitializePieces()
         {
             // generate all 32 pieces
             List<Piece> pieces =
@@ -98,10 +132,18 @@ namespace Mini_Project___Console_Chess
                     Board[piece.Position.Rank, piece.Position.File].Occupant = piece;
                 }
             }
-            // Console.ReadKey();
+        }
+        public static void ToggleActivePlayer(ChessboardBackend backend)
+        {
+            if(backend.ActivePlayer==Player.White) { backend.ActivePlayer = Player.Black; }
+            else { backend.ActivePlayer = Player.White; }
         }
         public Square GetSquare(Coordinate coordinate)
         {
+            if(coordinate.Rank<0 || coordinate.File<0 || coordinate.Rank>7 || coordinate.File > 7)
+            {
+                return null;
+            }
             return Board[coordinate.Rank, coordinate.File];
         }
 
@@ -137,10 +179,11 @@ namespace Mini_Project___Console_Chess
             {
                 move.Execute(this);
                 MoveHistory.Add(move);
-                ActivePlayer = ActivePlayer == Player.White ? Player.Black : Player.White; // change active player
+                ToggleActivePlayer(this);
                 return true;
             }
             return false;
         }
+        
     }
 }
