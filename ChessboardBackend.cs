@@ -12,7 +12,7 @@ namespace Mini_Project___Console_Chess
         public Square[,] Board;
         public List<Piece> Pieces;
         public Player ActivePlayer;
-        public string ActivePlayerString { get => ActivePlayer == Player.White ? "White" : "Black"; }
+        public Player InactivePlayer { get => ActivePlayer == Player.White ? Player.Black : Player.White; }
         public List<Move> MoveHistory;
         public ChessboardBackend()
         {
