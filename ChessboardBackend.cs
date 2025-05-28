@@ -179,7 +179,7 @@ namespace Mini_Project___Console_Chess
             {
                 move.Execute(this);
                 MoveHistory.Add(move);
-                ActivePlayer = ActivePlayer == Player.White ? Player.Black : Player.White; // change active player
+                ToggleActivePlayer(this);
                 return true;
             }
             return false;
