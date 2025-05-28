@@ -180,14 +180,11 @@ namespace Mini_Project___Console_Chess
             }
 
             if(!isValid) { return false; }
-
-            if (verbose) // prevents infinite loop
-            {
-                bool kingIsSafe = MoveDoesNotPutOwnKingInCheck(this, boardState);
-                if (kingIsSafe) { return true; }
-                else { return false; }
-            }
-            return true;
+    
+            bool kingIsSafe = MoveDoesNotPutOwnKingInCheck(this, boardState, verbose);
+            if (kingIsSafe) { return true; }
+            else { return false; }
+            //return true;
         }
 
         private static bool IsValidPawnMove(Move move, ChessboardBackend boardState, bool verbose=true)

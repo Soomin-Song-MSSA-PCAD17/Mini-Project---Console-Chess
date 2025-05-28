@@ -20,10 +20,10 @@ namespace Mini_Project___Console_Chess
         public const ConsoleColor BACKGROUND = ConsoleColor.Black;
         public const ConsoleColor DARKSQUAREBG = ConsoleColor.DarkGray;
         public const ConsoleColor LIGHTSQUAREBG = ConsoleColor.DarkYellow;
-        public const ConsoleColor DARKPIECEFG = ConsoleColor.DarkMagenta;
+        public const ConsoleColor DARKPIECEFG = ConsoleColor.Black;
         public const ConsoleColor LIGHTPIECEFG = ConsoleColor.Gray;
 
-        public const ConsoleColor TEXTCOLOR = ConsoleColor.Black;
+        public const ConsoleColor TEXTCOLOR = ConsoleColor.DarkMagenta;
         public const ConsoleColor LABELCOLOR = ConsoleColor.Yellow;
         #endregion
 
@@ -145,8 +145,18 @@ namespace Mini_Project___Console_Chess
         public bool CommandHandler()
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
-            Console.Write($"{Backend.ActivePlayerString}'s turn.");
+            if (Backend.ActivePlayerIsCheckmated())
+            {
+                Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
+                Console.Write($"{Backend.ActivePlayer} is checkmated.");
+                Console.ReadKey();
+                return false;
+            }
+            else
+            {
+                Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
+                Console.Write($"{Backend.ActivePlayer}'s turn.");
+            }
             Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 3);
             Console.Write("Input command: ");
             string[] command = Console.ReadLine().Split(' ');
@@ -154,7 +164,8 @@ namespace Mini_Project___Console_Chess
 
             if (command[0] == "quit")
             {
-                Console.WriteLine(command[0]);
+                Console.WriteLine($"{Backend.ActivePlayer} has quit. {Backend.InactivePlayer} wins!");
+                Console.ReadKey();
                 return false;
             }
 
@@ -177,6 +188,7 @@ namespace Mini_Project___Console_Chess
                         break;
                 }
             }
+
             else if (command.Length != 2)
             {
                 Console.WriteLine("Invalid number of arguments.");

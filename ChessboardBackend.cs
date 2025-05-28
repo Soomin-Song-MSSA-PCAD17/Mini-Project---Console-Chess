@@ -12,7 +12,7 @@ namespace Mini_Project___Console_Chess
         public Square[,] Board;
         public List<Piece> Pieces;
         public Player ActivePlayer;
-        public string ActivePlayerString { get => ActivePlayer == Player.White ? "White" : "Black"; }
+        public Player InactivePlayer { get => ActivePlayer == Player.White ? Player.Black : Player.White; }
         public List<Move> MoveHistory;
         public ChessboardBackend()
         {
@@ -185,5 +185,26 @@ namespace Mini_Project___Console_Chess
             return false;
         }
         
+        public bool ActivePlayerIsCheckmated()
+        {
+            // iterate through every piece, through every square
+            // if there are no valid moves, then they're checkmated (or stalemated??)
+            // TODO: stalemate check
+            foreach (Piece piece in Pieces)
+            {
+                for(int rank=0; rank<=8; rank++)
+                {
+                    for(int file = 0; file <= 8; file++)
+                    {
+                        Move move = new Move(piece, new Coordinate(rank, file));
+                        if (move.IsValidMove(this,verbose:false))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
     }
 }
