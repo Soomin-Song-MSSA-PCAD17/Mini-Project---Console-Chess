@@ -135,8 +135,7 @@ namespace Mini_Project___Console_Chess
             bool cantBeMoved = false;
             bool isValid = false;
 
-            // TODO: also check if moving will open up your own king
-            if (StartPosition.Rank == -1)
+            if (Piece.IsCaptured)
             {
                 if (verbose) { Console.WriteLine($"{Piece} has already been captured."); }
                 cantBeMoved = true;
@@ -152,8 +151,8 @@ namespace Mini_Project___Console_Chess
                 if (verbose) { Console.WriteLine($"{Piece} did not move."); }
                 cantBeMoved = true;
             }
-
-            if (!cantBeMoved)
+            if (cantBeMoved) { return false; }
+            else
             {
                 switch (Piece.Type)
                 {
@@ -182,8 +181,7 @@ namespace Mini_Project___Console_Chess
 
             if(!isValid) { return false; }
 
-            // TODO: check if the move puts your king in check
-            if (verbose)
+            if (verbose) // prevents infinite loop
             {
                 bool kingIsSafe = MoveDoesNotPutOwnKingInCheck(this, boardState);
                 if (kingIsSafe) { return true; }
@@ -288,45 +286,6 @@ namespace Mini_Project___Console_Chess
                     if (verbose) { Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}: invalid Pawn move pattern for {move.Piece.Type}"); }
                     return false;
             }
-
-            // promotion: check after completing movement. change piecetype. TODO: This should be in Execute();
-            /**#region pawn promotion
-            int promotionRank = move.Piece.Color == PieceColor.White ? 7 : 0;
-            if (move.EndPosition.Rank == promotionRank)
-            {
-                Console.WriteLine("\n\tKnight Bishop Rook Queen");
-                Console.Write("Promote pawn to: ");
-                while (move.Piece.Type == PieceType.Pawn)
-                {
-                    string? input = Console.ReadLine();
-                    {
-                        switch (input)
-                        {
-                            case "k":
-                            case "n":
-                            case "knight":
-                                move.Piece.Type = PieceType.Knight;
-                                break;
-                            case "b":
-                            case "bishop":
-                                move.Piece.Type = PieceType.Bishop;
-                                break;
-                            case "r":
-                            case "rook":
-                                move.Piece.Type = PieceType.Rook;
-                                break;
-                            case "q":
-                            case "queen":
-                                move.Piece.Type = PieceType.Queen;
-                                break;
-                            default:
-                                Console.WriteLine("Please select a valid piece type.");
-                                break;
-                        }
-                    }
-                }
-            }
-            #endregion*/
             return validity; // if it doesn't match any patterns, return false
         }
 
@@ -360,7 +319,7 @@ namespace Mini_Project___Console_Chess
                 if (occupant == null)
                 {
                     // moving into empty square
-                    //Console.WriteLine("Moving into empty square.");
+                    if (verbose) { Console.WriteLine($"{move.Piece} can move to {move.EndPosition}, which is an empty square."); }
                     return true;
                 }
                 else if (occupant.Color != move.Piece.Color)
@@ -397,7 +356,7 @@ namespace Mini_Project___Console_Chess
                 if (occupant == null)
                 {
                     // moving into empty square
-                    //Console.WriteLine("Moving into empty square.");
+                    if (verbose) { Console.WriteLine($"{move.Piece} can move to {move.EndPosition}, which is an empty square."); }
                     return true;
                 }
                 else if (occupant.Color != move.Piece.Color)
@@ -452,7 +411,7 @@ namespace Mini_Project___Console_Chess
                 if (occupant == null)
                 {
                     // moving into empty square
-                    //Console.WriteLine("Moving into empty square.");
+                    if (verbose) { Console.WriteLine($"{move.Piece} can move to {move.EndPosition}, which is an empty square."); }
                     return true;
                 }
                 else if (occupant.Color != move.Piece.Color)
@@ -555,7 +514,7 @@ namespace Mini_Project___Console_Chess
                 for(int i = 0; i <= 2; i++)
                 {
                     Coordinate castlingPath = new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i);
-                    if (!MoveDoesNotPutOwnKingInCheck(new Move(move.Piece, castlingPath), boardState))
+                    if (!MoveDoesNotPutOwnKingInCheck(new Move(move.Piece, castlingPath), boardState, verbose:false))
                     {
                         if (verbose) { Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}: {castlingPath} is under attack"); }
                         return false;
@@ -600,7 +559,7 @@ namespace Mini_Project___Console_Chess
                 for (int i = 0; i >= -2; i--)
                 {
                     Coordinate castlingPath = new Coordinate(move.Piece.Position.Rank, move.Piece.Position.File + i);
-                    if (!MoveDoesNotPutOwnKingInCheck(new Move(move.Piece, castlingPath), boardState))
+                    if (!MoveDoesNotPutOwnKingInCheck(new Move(move.Piece, castlingPath), boardState, verbose: false))
                     {
                         if (verbose) { Console.WriteLine($"{move.Piece} cannot move to {move.EndPosition}: {castlingPath} is under attack"); }
                         return false;
@@ -618,12 +577,12 @@ namespace Mini_Project___Console_Chess
             return false;
         }
 
-        public static bool MoveDoesNotPutOwnKingInCheck(Move move, ChessboardBackend boardState)
+        public static bool MoveDoesNotPutOwnKingInCheck(Move move, ChessboardBackend boardState, bool verbose=true)
         {
             Player color = move.Piece.Color == PieceColor.White ? Player.White : Player.Black;
             ChessboardBackend copy = new ChessboardBackend(boardState);
             Piece ownKing = copy.Pieces.Find(pc => (pc.Color == move.Piece.Color) && (pc.Type == PieceType.King));
-            Console.WriteLine($"\nCreating a temporary board to look for checks on {ownKing}...");
+            if (verbose) { Console.WriteLine($"\nCreating a temporary board to look for checks on {ownKing}..."); }
             
             // execute the move on the copy
             copy.TryGetOccupant(move.StartPosition, out Piece newPiece);
@@ -645,16 +604,16 @@ namespace Mini_Project___Console_Chess
 
             foreach (Piece piece in checking)
             {
-                Console.WriteLine($"{piece} is attacking {ownKing}");
+                if (verbose) { Console.WriteLine($"{piece} is attacking {ownKing}"); }
             }
             if (checking.Count == 0)
             {
-                Console.WriteLine($"{ownKing} is safe from attacks.");
+                if (verbose) { Console.WriteLine($"{ownKing} is safe from attacks."); }
                 return true;
             }
             else
             {
-                Console.WriteLine($"Move cannot be executed because {ownKing} would be in check.");
+                if (verbose) { Console.WriteLine($"Move cannot be executed because {ownKing} would be in check."); }
                 return false;
             }
         }
