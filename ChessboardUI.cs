@@ -145,8 +145,18 @@ namespace Mini_Project___Console_Chess
         public bool CommandHandler()
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
-            Console.Write($"{Backend.ActivePlayer}'s turn.");
+            if (Backend.ActivePlayerIsCheckmated())
+            {
+                Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
+                Console.Write($"{Backend.ActivePlayer} is checkmated.");
+                Console.ReadKey();
+                return false;
+            }
+            else
+            {
+                Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 2);
+                Console.Write($"{Backend.ActivePlayer}'s turn.");
+            }
             Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 3);
             Console.Write("Input command: ");
             string[] command = Console.ReadLine().Split(' ');
