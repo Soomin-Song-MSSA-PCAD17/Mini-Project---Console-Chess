@@ -10,6 +10,13 @@ Algebraic move notations are not supported at this time.
 
 `quit` to concede.
 
+## Demo
+![Screenshot1](./media/Screenshot1.png)
+![Screenshot2](./media/Screenshot2.png)
+![Screenshot3](./media/Screenshot3.png)
+![Screenshot4](./media/Screenshot4.png)
+![Screenshot5](./media/Screenshot5.png)
+
 ## Classes
 
 ### `ChessboardBackend`
