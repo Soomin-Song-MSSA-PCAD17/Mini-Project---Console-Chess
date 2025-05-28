@@ -132,7 +132,6 @@ namespace Mini_Project___Console_Chess
                     Board[piece.Position.Rank, piece.Position.File].Occupant = piece;
                 }
             }
-            // Console.ReadKey();
         }
         public static void ToggleActivePlayer(ChessboardBackend backend)
         {
@@ -141,6 +140,10 @@ namespace Mini_Project___Console_Chess
         }
         public Square GetSquare(Coordinate coordinate)
         {
+            if(coordinate.Rank<0 || coordinate.File<0 || coordinate.Rank>7 || coordinate.File > 7)
+            {
+                return null;
+            }
             return Board[coordinate.Rank, coordinate.File];
         }
 

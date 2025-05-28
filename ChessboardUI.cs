@@ -149,8 +149,9 @@ namespace Mini_Project___Console_Chess
             Console.Write($"{Backend.ActivePlayerString}'s turn.");
             Console.SetCursorPosition(HMargin, 8 * SquareHeight + VMargin + 3);
             Console.Write("Input command: ");
-
             string[] command = Console.ReadLine().Split(' ');
+            Console.WriteLine();
+
             if (command[0] == "quit")
             {
                 Console.WriteLine(command[0]);
@@ -186,23 +187,25 @@ namespace Mini_Project___Console_Chess
             else if (command.Length != 2)
             {
                 Console.WriteLine("Invalid number of arguments.");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
-                return true;
-            }
-
-            string regexCoordinate = @"[a-h][1-8]"; //regex for algebraic notation
-            Regex re = new Regex(regexCoordinate, RegexOptions.IgnoreCase);
-            if (re.IsMatch(command[0]) && re.IsMatch(command[1]))
-            {
-                //check if input matches regex for validity of coordinate
-                if (Backend.TryGetOccupant(new Coordinate(command[0]), out Piece? pieceToMove))
-                { Backend.TryMove(new Move(pieceToMove, new Coordinate(command[1]))); }
-                else
-                { Console.WriteLine($"No piece found at {command[0]}."); }
             }
             else
-            { Console.WriteLine($"{command[0]} or {command[1]} is not a valid coordinate."); }
+            {
+                string regexCoordinate = @"[a-h][1-8]"; //regex for algebraic notation
+                Regex re = new Regex(regexCoordinate, RegexOptions.IgnoreCase);
+                if (re.IsMatch(command[0]) && re.IsMatch(command[1]))
+                {
+                    //check if input matches regex for validity of coordinate
+                    if (Backend.TryGetOccupant(new Coordinate(command[0]), out Piece? pieceToMove))
+                    { Backend.TryMove(new Move(pieceToMove, new Coordinate(command[1]))); }
+                    else
+                    { Console.WriteLine($"No piece found at {command[0]}."); }
+                }
+                else
+                {
+                    Console.WriteLine($"{command[0]} or {command[1]} is not a valid coordinate.");
+                }
+            }
+            Console.WriteLine("Updating board.");
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             return true;
